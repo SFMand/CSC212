@@ -1,4 +1,4 @@
 
-public Class ECommerceSystem{
+public class ECommerceSystem{
 
 }
