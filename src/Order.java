@@ -2,14 +2,14 @@
 public class Order {
 
     private int orderId;
-    private Customer customer;
+    private int customerId;
     private double totalPrice;
     private int orderDate;
     private String status;
     private List<Product> orderProducts;
 
-    public Order(Customer customer, int orderDate, int orderId) {
-        this.customer = customer;
+    public Order(int customerId, int orderDate, int orderId) {
+        this.customerId = customerId;
         this.orderDate = orderDate;
         this.orderId = orderId;
         this.orderProducts = new LinkedList<>();
@@ -34,12 +34,12 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public int getCustomer() {
+        return customerId;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setCustomer(int customerId) {
+        this.customerId = customerId;
     }
 
     public double getTotalPrice() {

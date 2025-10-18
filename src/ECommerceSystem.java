@@ -1,5 +1,6 @@
 
-import java.io.*;
+import java.io.*; //for file loading, should also update files when adding items
+
 public class ECommerceSystem {
 
     private List<Product> allProducts;
@@ -22,17 +23,19 @@ public class ECommerceSystem {
     }
 
     public boolean removeProduct(int productId) {
-        // Remove product by ID or set stock to 0 if found
-        /*Product product = searchProductId(productId);
+        /* Search product by ID then set stock to 0 if found
+        Product product = searchProductId(productId);
         if (product != null) {
             product.setStock(0);
             return true;
-        }*/
+        }
+        OR move current thru list then allProducts.remove()
+         */
         return false;
     }
 
     public boolean updateProduct(Product p) {
-        //update product details (name, price, stock)
+        //update product details (name, price, stock), if not found return false
         return false;
     }
 
@@ -47,7 +50,7 @@ public class ECommerceSystem {
     }
 
     public List<Product> trackOutOfStockProducts() {
-        //track out of stock products then return list
+        //search out of stock products then return list
         return null;
     }
 
@@ -56,7 +59,7 @@ public class ECommerceSystem {
     }
 
     public Order placeOrder(Customer c, List<Product> products) {
-        //create new order
+        //create new order, list of products should up to customer choice
         return null;
     }
 
@@ -66,34 +69,29 @@ public class ECommerceSystem {
     }
 
     public List<Order> getOrderHistory(Customer c) {
-        //search orders by customer
+        //search orders by customer then return list
         return null;
     }
 
-    public List<Product> getTopratedProducts(){
-        //get 3 top rated products by average rating
+    public List<Product> getTopRatedProducts() {
+        //get 3 top rated products by average rating and return list
         return null;
     }
 
-    public List<Order> getOrdersBetweenDates(int startDate, int endDate){
-        //get orders between two dates
+    public List<Order> getOrdersBetweenDates(int startDate, int endDate) {
+        //get orders between two dates and return list
         return null;
     }
 
-    public List<Review> getCustomerReviews(Customer c){
-        //get all reviews on every product ordered by customer
+    public List<Review> getCustomerReviews(Customer c) {
+        //get all reviews on every product ordered by customer and return list
         return null;
     }
 
-    public List<Product> findCommonProducts(int customerId1, int customerId2){
-        //find common products reviewed by two customers with products' average rating above 4.0
+    public List<Product> findCommonProducts(int customerId1, int customerId2) {
+        //find common products reviewed by two customers with product's average rating above 4.0(4.1, 4.2...5) and return list
         return null;
     }
-
-
-
-
-
-
+    // add printing methods for lists
 
 }

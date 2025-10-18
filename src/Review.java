@@ -1,29 +1,29 @@
 
 public class Review {
 
-    private int score;
+    private int rating;
     private String comment;
-    private Customer reviewer;
+    private int customerId;
 
-    public Review(String comment, int score, Customer reviewer) {
+    public Review(String comment, int score, int customerId) {
         this.comment = comment;
-        this.score = score;
-        this.reviewer = reviewer;
+        this.rating = score;
+        this.customerId = customerId;
     }
 
     public void editReview(String comment, int score) {
         this.comment = comment;
-        this.score = score;
+        this.rating = score;
 
     }
     //  setter/getters
 
-    public int getScore() {
-        return score;
+    public int getRating() {
+        return rating;
     }
 
-    public void setScore(int score) {
-        this.score = score;
+    public void setRating(int score) {
+        this.rating = score;
     }
 
     public String getComment() {
@@ -34,13 +34,13 @@ public class Review {
         this.comment = comment;
     }
 
-    public Customer getReviewer() {
-        return reviewer;
+    public int getCustomerId() {
+        return customerId;
     }
 
-    public void setReviewer(Customer reviewer) {
-        this.reviewer = reviewer;
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
-        //print method needed
+    //print method needed
 
 }

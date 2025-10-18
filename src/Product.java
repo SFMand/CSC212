@@ -27,11 +27,11 @@ public class Product {
             reviews.findFirst();
             while (!reviews.last()) {
                 count++;
-                sum += reviews.retrieve().getScore();
+                sum += reviews.retrieve().getRating();
                 reviews.findNext();
             }
             count++;
-            sum += reviews.retrieve().getScore();
+            sum += reviews.retrieve().getRating();
             avg = sum / count;
         }
         return avg;
