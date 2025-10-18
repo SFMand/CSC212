@@ -68,7 +68,10 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public void remove() {
-        for (int i = current + 1; i < size - 1; i++) {
+        if (empty()) {
+            return;
+        }
+        for (int i = current + 1; i < size; i++) {
 
             nodes[i - 1] = nodes[i];
         }
