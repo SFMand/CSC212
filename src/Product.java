@@ -22,8 +22,7 @@ public class Product {
         this.stock = stock;
         this.reviews = new LinkedList<>();
     }
-    public void addReview(String comment, int rating, Customer c) {
-        Review r = new Review(comment, rating, c.getCustomerId());
+    public void addReview(Review r) {
         reviews.insert(r);
     }
 

@@ -18,8 +18,66 @@ public class ECommerceSystem {
     }
 
     public void loadFiles(String productsFile, String customersFile, String ordersFile, String reviewsFile) {
+            String file = productsFile;
+            BufferedReader reader;
+            String line;
+             try {
+                 reader = new BufferedReader(new FileReader(file));
+                 reader.readLine();
+                 while((line = reader.readLine()) != null){
+                    String[] row = line.split(",");
+                    Product p = new Product(Integer.parseInt(row[0]), row[1], Integer.parseInt(row[2]), Integer.parseInt(row[3]));
+                    addProduct(p);
+                 }
+             } catch (Exception e) {
+                System.err.println(e.getMessage());
+             } 
 
-        //loading files
+             file = customersFile;
+             
+             try {
+                 reader = new BufferedReader(new FileReader(file));
+                 reader.readLine();
+                 while((line = reader.readLine()) != null){
+                    String[] row = line.split(",");
+                    Customer c = new Customer(Integer.parseInt(row[0]), row[1], row[2]);
+                    registerCustomer(c);
+                 }
+             } catch (Exception e) {
+                System.err.println(e.getMessage());
+             }
+
+             file = ordersFile;
+             try {
+                 reader = new BufferedReader(new FileReader(file));
+                 reader.readLine();
+                 while((line = reader.readLine()) != null){
+                    String[] row = line.split(",");
+                    Order o = new Order(Integer.parseInt(row[0]), Integer.parseInt(row[1]),Double.parseDouble(row[3]), LocalDate.parse(row[4]), row[5]);
+                    String[] productString = row[2].split(";");
+                    List<Product> productsFromFile = new LinkedList<>();
+                    for(String index: productString){
+                        productsFromFile.insert(searchProductId(Integer.parseInt(index)));
+                    }
+                    o.setOrderProducts(productsFromFile);
+                    addOrder(o);
+                 }
+             } catch (Exception e) {
+                System.err.println(e.getMessage());
+             }
+
+             file = reviewsFile;
+             try {
+                 reader = new BufferedReader(new FileReader(file));
+                 reader.readLine();
+                 while((line = reader.readLine()) != null){
+                    String[] row = line.split(",");
+                    Review r = new Review(Integer.parseInt(row[0]), Integer.parseInt(row[2]) , Integer.parseInt(row[3]), row[4]);
+                   searchProductId(Integer.parseInt(row[1])).addReview(r);
+                 }
+             } catch (Exception e) {
+                System.err.println(e.getMessage());
+             }
     }
 
     public void addProduct(Product p) {
@@ -110,7 +168,27 @@ public class ECommerceSystem {
     public void registerCustomer(Customer c) {
         allCustomers.insert(c);
     }
+    public Customer searchCustomerId(int customerId){
+        Customer c = null;
+        if (!allCustomers.empty()) {
+            allCustomers.findFirst();
 
+            while (!allCustomers.last()) {
+                if (allCustomers.retrieve().getCustomerId() == customerId) {
+                    c = allCustomers.retrieve();
+                }
+                allProducts.findNext();
+            }
+            if (allCustomers.retrieve().getCustomerId() == customerId) {
+                    c = allCustomers.retrieve();
+            }
+        }
+        return c;
+
+    }
+        public void addOrder(Order o){
+            allOrders.insert(o);
+        }
     public Order placeOrder(Customer c, List<Product> products) {
         Order order = new Order(c.getCustomerId(), LocalDate.now());
         double totalPrice = 0;
@@ -119,10 +197,13 @@ public class ECommerceSystem {
             while (!products.last()) {
                 order.getOrderProducts().insert(products.retrieve());
                 totalPrice += products.retrieve().getPrice();
-                products.findNext();
+/*                products.retrieve().setStock(products.retrieve().getStock() - 1);
+*/                products.findNext();
             }
             order.getOrderProducts().insert(products.retrieve());
             totalPrice += products.retrieve().getPrice();
+/*            products.retrieve().setStock(products.retrieve().getStock() - 1);
+*/
         }
         order.setTotalPrice(totalPrice);
         c.getOrderHistory().insert(order);

@@ -14,7 +14,7 @@ public class Review {
         reviewId = countId++;
     }
 
-    public Review(int reviewId, String comment, int rating,int customerId) {
+    public Review(int reviewId, int customerId, int rating, String comment) {
         this.comment = comment;
         this.rating = rating;
         this.customerId = customerId;

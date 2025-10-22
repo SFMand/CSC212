@@ -9,13 +9,13 @@ public class Order {
     private String status;
     private List<Product> orderProducts;
 
-    public Order(int orderId,int customerId, LocalDate orderDate) {
+    public Order(int orderId,int customerId, double totalPrice ,LocalDate orderDate, String status) {
         this.customerId = customerId;
         this.orderDate = orderDate;
         this.orderId = orderId;
         this.orderProducts = new LinkedList<>();
-        this.status = "Pending"; // Default status
-        this.totalPrice = 0;
+        this.status = status;
+        this.totalPrice = totalPrice;
     }
     public Order(int customerId, LocalDate orderDate) {
         this.customerId = customerId;
