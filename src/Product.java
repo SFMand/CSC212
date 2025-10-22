@@ -23,6 +23,7 @@ public class Product {
         this.reviews = new LinkedList<>();
     }
     public void addReview(Review r) {
+        //write to csv file
         reviews.insert(r);
     }
 
