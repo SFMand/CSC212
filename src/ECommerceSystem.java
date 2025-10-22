@@ -203,13 +203,12 @@ public class ECommerceSystem {
             while (!products.last()) {
                 order.getOrderProducts().insert(products.retrieve());
                 totalPrice += products.retrieve().getPrice();
-                /*                products.retrieve().setStock(products.retrieve().getStock() - 1);
-                 */ products.findNext();
+                products.retrieve().setStock(products.retrieve().getStock() - 1);
+                products.findNext();
             }
             order.getOrderProducts().insert(products.retrieve());
             totalPrice += products.retrieve().getPrice();
-            /*            products.retrieve().setStock(products.retrieve().getStock() - 1);
-             */
+            products.retrieve().setStock(products.retrieve().getStock() - 1);
         }
         order.setTotalPrice(totalPrice);
         c.getOrderHistory().insert(order);
