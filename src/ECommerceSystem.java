@@ -1,5 +1,7 @@
 
 import java.io.*; //for file loading, should also update files when adding items
+import java.util.Scanner;
+import java.time.*;
 
 public class ECommerceSystem {
 
@@ -7,14 +9,16 @@ public class ECommerceSystem {
     private List<Customer> allCustomers;
     private List<Order> allOrders;
 
+    Scanner console = new Scanner(System.in);
+
     public ECommerceSystem() {
         this.allProducts = new LinkedList<>();
         this.allCustomers = new LinkedList<>();
         this.allOrders = new LinkedList<>();
     }
 
-    public void loadFiles(String productsFile, String customersFile, String ordersFile) {
-        
+    public void loadFiles(String productsFile, String customersFile, String ordersFile, String reviewsFile) {
+
         //loading files
     }
 
@@ -23,35 +27,84 @@ public class ECommerceSystem {
     }
 
     public boolean removeProduct(int productId) {
-        /* Search product by ID then set stock to 0 if found
-        Product product = searchProductId(productId);
-        if (product != null) {
-            product.setStock(0);
+        Product p = searchProductId(productId);
+        if (p != null) {
+            p.setStock(0);
             return true;
         }
-        OR move current thru list then allProducts.remove()
-         */
         return false;
     }
 
     public boolean updateProduct(Product p) {
-        //update product details (name, price, stock), if not found return false
+        if (searchProductId(p.getProductId()) != null) {
+            System.out.println("Enter new name:");
+            String name = console.next();
+            p.setName(name);
+            System.out.println("Enter new price:");
+            double price = console.nextDouble();
+            p.setPrice(price);
+            System.out.println("Enter new stock:");
+            int stock = console.nextInt();
+            p.setStock(stock);
+
+            return true;
+        }
         return false;
     }
 
     public Product searchProductId(int productId) {
-        //search product by ID then return product
-        return null;
+        Product p = null;
+        if (!allProducts.empty()) {
+            allProducts.findFirst();
+
+            while (!allProducts.last()) {
+                if (allProducts.retrieve().getProductId() == productId) {
+                    p = allProducts.retrieve();
+                }
+                allProducts.findNext();
+            }
+            if (allProducts.retrieve().getProductId() == productId) {
+                p = allProducts.retrieve();
+            }
+        }
+        return p;
     }
 
     public Product searchProductName(String name) {
-        //search product by name then return product
-        return null;
+        Product p = null;
+        if (!allProducts.empty()) {
+            allProducts.findFirst();
+
+            while (!allProducts.last()) {
+                if (allProducts.retrieve().getName().equalsIgnoreCase(name)) {
+                    p = allProducts.retrieve();
+                }
+                allProducts.findNext();
+            }
+            if (allProducts.retrieve().getName().equalsIgnoreCase(name)) {
+                p = allProducts.retrieve();
+            }
+        }
+        return p;
     }
 
     public List<Product> trackOutOfStockProducts() {
-        //search out of stock products then return list
-        return null;
+        List<Product> tosp = new LinkedList<>();
+        if (!allProducts.empty()) {
+            allProducts.findFirst();
+
+            while (!allProducts.last()) {
+                if (allProducts.retrieve().getStock() == 0) {
+                    tosp.insert(allProducts.retrieve());
+                }
+                allProducts.findNext();
+            }
+            if (allProducts.retrieve().getStock() == 0) {
+                tosp.insert(allProducts.retrieve());
+
+            }
+        }
+        return tosp;
     }
 
     public void registerCustomer(Customer c) {
@@ -59,18 +112,39 @@ public class ECommerceSystem {
     }
 
     public Order placeOrder(Customer c, List<Product> products) {
-        //create new order, list of products should up to customer choice
-        return null;
+        Order order = new Order(c.getCustomerId(), LocalDate.now());
+        double totalPrice = 0;
+        if (!products.empty()) {
+            products.findFirst();
+            while (!products.last()) {
+                order.getOrderProducts().insert(products.retrieve());
+                totalPrice += products.retrieve().getPrice();
+                products.findNext();
+            }
+            order.getOrderProducts().insert(products.retrieve());
+            totalPrice += products.retrieve().getPrice();
+        }
+        order.setTotalPrice(totalPrice);
+        c.getOrderHistory().insert(order);
+        allOrders.insert(order);
+        return order;
     }
 
     public Order searchOrderId(int orderId) {
-        //search orders by id then return order
-        return null;
-    }
-
-    public List<Order> getOrderHistory(Customer c) {
-        //search orders by customer then return list
-        return null;
+        Order o = null;
+        if (!allOrders.empty()) {
+            allOrders.findFirst();
+            while (!allOrders.last()) {
+                if (allOrders.retrieve().getOrderId() == orderId) {
+                    o = allOrders.retrieve();
+                }
+                allOrders.findNext();
+            }
+            if (allOrders.retrieve().getOrderId() == orderId) {
+                o = allOrders.retrieve();
+            }
+        }
+        return o;
     }
 
     public List<Product> getTopRatedProducts() {
@@ -84,8 +158,49 @@ public class ECommerceSystem {
     }
 
     public List<Review> getCustomerReviews(Customer c) {
-        //get all reviews on every product ordered by customer and return list
-        return null;
+        List<Review> reviewsByC = new LinkedList<>();
+        List<Order> ordersByC = c.getOrderHistory();
+
+        if (!ordersByC.empty()) {
+            ordersByC.findFirst();
+            while (!ordersByC.last()) {
+                List<Product> productsInOrder = ordersByC.retrieve().getOrderProducts();
+                addReviewsToList(productsInOrder, reviewsByC);
+                ordersByC.findNext();
+            }
+            List<Product> productsInOrder = ordersByC.retrieve().getOrderProducts();
+            addReviewsToList(productsInOrder, reviewsByC);
+        }
+
+        return reviewsByC;
+    }
+
+    public void addReviewsToList(List<Product> products, List<Review> target) {
+        if (!products.empty()) {
+            products.findFirst();
+            while (!products.last()) {
+                List<Review> reviewsOfProduct = products.retrieve().getReviews();
+                if (!reviewsOfProduct.empty()) {
+                    reviewsOfProduct.findFirst();
+                    while (!reviewsOfProduct.last()) {
+                        target.insert(reviewsOfProduct.retrieve());
+                        reviewsOfProduct.findNext();
+                    }
+                    target.insert(reviewsOfProduct.retrieve());
+
+                }
+                products.findNext();
+            }
+            List<Review> reviewsOfProduct = products.retrieve().getReviews();
+            if (!reviewsOfProduct.empty()) {
+                reviewsOfProduct.findFirst();
+                while (!reviewsOfProduct.last()) {
+                    target.insert(reviewsOfProduct.retrieve());
+                    reviewsOfProduct.findNext();
+                }
+                target.insert(reviewsOfProduct.retrieve());
+            }
+        }
     }
 
     public List<Product> findCommonProducts(int customerId1, int customerId2) {

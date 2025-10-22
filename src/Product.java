@@ -2,20 +2,28 @@
 public class Product {
 
     private int productId;
+    private int countId = 151;
     private String name;
     private double price;
     private int stock;
     private List<Review> reviews;
 
-    public Product(String name, double price, int productId, int stock) {
+    public Product(String name, double price, int stock) {
+        this.name = name;
+        this.price = price;
+        this.productId = countId++;
+        this.stock = stock;
+        this.reviews = new LinkedList<>();
+    }
+    public Product( int productId, String name, double price, int stock) {
         this.name = name;
         this.price = price;
         this.productId = productId;
         this.stock = stock;
         this.reviews = new LinkedList<>();
     }
-
-    public void addReview(Review r) {
+    public void addReview(String comment, int rating, Customer c) {
+        Review r = new Review(comment, rating, c.getCustomerId());
         reviews.insert(r);
     }
 
