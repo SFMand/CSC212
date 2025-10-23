@@ -1,9 +1,18 @@
 
 public class Customer {
+
     private int customerId;
+    private int countId = 231;
     private String name;
     private String email;
     private List<Order> orders;
+
+    public Customer(String name, String email) {
+        this.customerId = countId++;
+        this.name = name;
+        this.email = email;
+        orders = new LinkedList<>();
+    }
 
     public Customer(int customerId, String name, String email) {
         this.customerId = customerId;
@@ -11,6 +20,7 @@ public class Customer {
         this.email = email;
         orders = new LinkedList<>();
     }
+
     public List<Order> getOrderHistory() {
         return orders;
     }
@@ -45,5 +55,4 @@ public class Customer {
     }
     //print method needed
 
-    
 }

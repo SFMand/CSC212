@@ -1,17 +1,26 @@
-
+import java.time.*;
 public class Order {
 
     private int orderId;
+    private int countId = 401;
     private int customerId;
     private double totalPrice;
-    private int orderDate;
+    private LocalDate orderDate;
     private String status;
     private List<Product> orderProducts;
 
-    public Order(int customerId, int orderDate, int orderId) {
+    public Order(int orderId,int customerId, double totalPrice ,LocalDate orderDate, String status) {
         this.customerId = customerId;
         this.orderDate = orderDate;
         this.orderId = orderId;
+        this.orderProducts = new LinkedList<>();
+        this.status = status;
+        this.totalPrice = totalPrice;
+    }
+    public Order(int customerId, LocalDate orderDate) {
+        this.customerId = customerId;
+        this.orderDate = orderDate;
+        this.orderId = countId++;
         this.orderProducts = new LinkedList<>();
         this.status = "Pending"; // Default status
         this.totalPrice = 0;
@@ -34,7 +43,7 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public int getCustomer() {
+    public int getCustomerId() {
         return customerId;
     }
 
@@ -50,11 +59,11 @@ public class Order {
         this.totalPrice = totalPrice;
     }
 
-    public int getOrderDate() {
+    public LocalDate getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(int orderDate) {
+    public void setOrderDate(LocalDate orderDate) {
         this.orderDate = orderDate;
     }
 
