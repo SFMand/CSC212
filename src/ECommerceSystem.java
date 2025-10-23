@@ -293,4 +293,93 @@ public class ECommerceSystem {
     }
     // add printing methods for lists
 
+     public void printAllProducts() {
+    System.out.println("=== PRODUCTS ===");
+    if (allProducts.empty()) {
+        System.out.println("No products found");
+        return;
+    }
+    allProducts.findFirst();
+    while (true) {
+        Product p = allProducts.retrieve();
+        System.out.println("Product ID: " + p.getProductId());
+        System.out.println("Name: " + p.getName());
+        System.out.println("Price: " + p.getPrice());
+        System.out.println("Stock: " + p.getStock());
+        System.out.println("Average Rating: " + p.averageRating());
+        System.out.println("-------------------------");
+
+        if (allProducts.last()) {
+            break;
+        }
+        allProducts.findNext();
+    }
+       
+    }
+
+
+
+    public void printAllCustomers() {
+    System.out.println("=== CUSTOMERS ===");
+    if (allCustomers.empty()) {
+        System.out.println("No customers found");
+        return;
+    }
+
+    allCustomers.findFirst();
+    while (true) {
+        Customer c = allCustomers.retrieve();
+        System.out.println("Customer ID: " + c.getCustomerId());
+        System.out.println("Name: " + c.getName());
+        System.out.println("Email: " + c.getEmail());
+
+        if (allCustomers.last()) {
+            break;
+        }
+        allCustomers.findNext();
+    }
+       
+}
+
+
+public void printAllOrders() {
+    System.out.println("=== ORDERS ===");
+    if (allOrders.empty()) {
+        System.out.println("No orders found");
+        return;
+    }
+
+    allOrders.findFirst();
+    while (true) {
+        Order o = allOrders.retrieve();
+        System.out.println("Order ID: " + o.getOrderId());
+        System.out.println("Customer ID: " + o.getCustomerId());
+        System.out.println("Order Date: " + o.getOrderDate());
+        System.out.println("Total Price: " + o.getTotalPrice());
+        System.out.println("Total Price: " + o.getStatus());
+        
+
+
+        // to get the number of items in the order instead of inserting all items
+        int countItems = 0;
+        List<Product> p = o.getOrderProducts();
+        if (!p.empty()) {
+            p.findFirst();
+            countItems = 1;
+            while (!p.last()) {
+                countItems++;
+                p.findNext();
+            }
+        }
+        System.out.println("Number of Items: " + countItems);
+        System.out.println("-------------------------");
+
+        if (allOrders.last()) {
+            break;
+        }
+        allOrders.findNext();
+    }
+        
+}
+
 }
