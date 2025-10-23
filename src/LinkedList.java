@@ -45,7 +45,7 @@ public class LinkedList<T> implements List<T> {
     public void insert(T e) {
         Node<T> temp;
         if (empty()) {
-            head = current = new Node(e);
+            head = current = new Node<>(e);
         } else {
             temp = current.next;
             current.next = new Node<>(e);

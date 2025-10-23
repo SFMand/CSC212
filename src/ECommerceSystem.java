@@ -26,7 +26,7 @@ public class ECommerceSystem {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] row = line.split(",");
-                Product p = new Product(Integer.parseInt(row[0]), row[1], Integer.parseInt(row[2]), Integer.parseInt(row[3]));
+                Product p = new Product(Integer.parseInt(row[0]), row[1], Double.parseDouble(row[2]), Integer.parseInt(row[3]));
                 allProducts.insert(p);
             }
         } catch (IOException | NumberFormatException e) {
@@ -54,12 +54,10 @@ public class ECommerceSystem {
             while ((line = reader.readLine()) != null) {
                 String[] row = line.split(",");
                 Order o = new Order(Integer.parseInt(row[0]), Integer.parseInt(row[1]), Double.parseDouble(row[3]), LocalDate.parse(row[4]), row[5]);
-                String[] productString = row[2].split(";");
-                List<Product> productsFromFile = new LinkedList<>();
+                String[] productString = row[2].replace('"', ' ').trim().split(";");
                 for (String index : productString) {
-                    productsFromFile.insert(searchProductId(Integer.parseInt(index)));
+                    o.getOrderProducts().insert(searchProductId(Integer.parseInt(index)));
                 }
-                o.setOrderProducts(productsFromFile);
                 allOrders.insert(o);
             }
         } catch (IOException | NumberFormatException e) {
