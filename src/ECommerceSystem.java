@@ -233,12 +233,68 @@ public class ECommerceSystem {
 
     public List<Product> getTopRatedProducts() {
         //get 3 top rated products by average rating and return list
-        return null;
+        List<Product> top = new LinkedList<>();
+        if (allProducts.empty()) {
+            return top;
+        }
+        Product first = null, second = null, third = null;
+
+        allProducts.findFirst();
+        while (true) {
+            Product p = allProducts.retrieve();
+            double rating = p.averageRating();
+
+            if (first == null || rating > first.averageRating()) {
+                third = second;
+                second = first;
+                first = p;
+            } else if (second == null || rating > second.averageRating()) {
+                third = second;
+                second = p;
+            } else if (third == null || rating > third.averageRating()) {
+                third = p;
+            }
+
+            if (allProducts.last()) {
+                break;
+            }
+            allProducts.findNext();
+        }
+
+        if (first != null) {
+            top.insert(first);
+        }
+        if (second != null) {
+            top.insert(second);
+        }
+        if (third != null) {
+            top.insert(third);
+        }
+
+        return top;
     }
 
-    public List<Order> getOrdersBetweenDates(int startDate, int endDate) {
+    public List<Order> getOrdersBetweenDates(LocalDate startDate, LocalDate endDate) {
         //get orders between two dates and return list
-        return null;
+        List<Order> result = new LinkedList<>();
+        if (!allOrders.empty()) {
+            Order o = null;
+            allOrders.findFirst();
+            while (!allOrders.last()) {
+                o = allOrders.retrieve();
+                LocalDate date = o.getOrderDate();
+                if (date.isAfter(startDate) && date.isBefore(endDate)) {
+                    result.insert(o);
+                }
+                allOrders.findNext();
+            }
+            o = allOrders.retrieve();
+            LocalDate date = o.getOrderDate();
+            if (date.isAfter(startDate) && date.isBefore(endDate)) {
+                result.insert(o);
+        
+            }}
+        return result;
     }
 
     public List<Review> getCustomerReviews(Customer c) {
@@ -289,7 +345,81 @@ public class ECommerceSystem {
 
     public List<Product> findCommonProducts(int customerId1, int customerId2) {
         //find common products reviewed by two customers with product's average rating above 4.0(4.1, 4.2...5) and return list
-        return null;
+        List<Product> result = new LinkedList<>();
+        if (!allProducts.empty()) {
+            Product p = null;
+            List<Review> revs = null;
+            Review r = null;
+            boolean reviewedBy1 = false;
+            boolean reviewedBy2 = false;
+            allProducts.findFirst();
+
+            while (!allProducts.last()) {
+                p = allProducts.retrieve();
+                revs = p.getReviews();
+                if (!revs.empty()) {
+                    revs.findFirst();
+                    while (!revs.last()) {
+                        r = revs.retrieve();
+                        if (r.getCustomerId() == customerId1) {
+                            reviewedBy1 = true;
+                        }
+                        if (r.getCustomerId() == customerId2) {
+                            reviewedBy2 = true;
+                        }
+                        revs.findNext();
+                    }
+
+                    r = revs.retrieve();
+                    if (r.getCustomerId() == customerId1) {
+                        reviewedBy1 = true;
+                    }
+                    if (r.getCustomerId() == customerId2) {
+                        reviewedBy2 = true;
+                    }
+                }
+
+                if (reviewedBy1 && reviewedBy2 && p.averageRating() > 4.0) {
+                    result.insert(p);
+                }
+
+                allProducts.findNext();
+            }
+
+            // Check the last product
+            p = allProducts.retrieve();
+            reviewedBy1 = false;
+            reviewedBy2 = false;
+
+            revs = p.getReviews();
+            if (!revs.empty()) {
+                revs.findFirst();
+                while (!revs.last()) {
+                    r = revs.retrieve();
+                    if (r.getCustomerId() == customerId1) {
+                        reviewedBy1 = true;
+                    }
+                    if (r.getCustomerId() == customerId2) {
+                        reviewedBy2 = true;
+                    }
+                    revs.findNext();
+                }
+                // Check last review
+                Review lastReview = revs.retrieve();
+                if (lastReview.getCustomerId() == customerId1) {
+                    reviewedBy1 = true;
+                }
+                if (lastReview.getCustomerId() == customerId2) {
+                    reviewedBy2 = true;
+                }
+            }
+
+            if (reviewedBy1 && reviewedBy2 && p.averageRating() > 4.0) {
+                result.insert(p);
+            }
+        }
+
+        return result;
     }
     // add printing methods for lists
 
