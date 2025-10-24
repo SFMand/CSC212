@@ -70,7 +70,7 @@ public class ECommerceSystem {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] row = line.split(",");
-                Review r = new Review(Integer.parseInt(row[0]), Integer.parseInt(row[2]), Integer.parseInt(row[3]), row[4]);
+                Review r = new Review(Integer.parseInt(row[0]), Integer.parseInt(row[2]), Integer.parseInt(row[3]), (row.length > 5 ? row[4] + "," + row[5] : row[4]));
                 searchProductId(Integer.parseInt(row[1])).getReviews().insert(r);
             }
         } catch (IOException | NumberFormatException e) {

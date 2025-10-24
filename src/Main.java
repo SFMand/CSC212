@@ -14,7 +14,7 @@ public class Main {
         eCSystem.printAllCustomers();
         eCSystem.printAllOrders();
 
-        eCSystem.searchProductId(102).printReviews();
+        eCSystem.searchProductId(105).printReviews();
 
         //testing GUI
         JFrame frame;
