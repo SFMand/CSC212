@@ -100,4 +100,14 @@ public class Product {
 
    //Print method needed
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Product Id: ").append(productId);
+        sb.append("\nName: ").append(name);
+        sb.append("\nPrice: ").append(price);
+        sb.append("\nStock: ").append(stock);
+        return sb.toString();
+    }
+
 }

@@ -85,4 +85,17 @@ public class Order {
 
     //print method needed
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Order Id: ").append(orderId);
+        sb.append("\nCustomer Id:").append(customerId);
+        sb.append("\nTotal Price: ").append(totalPrice);
+        sb.append("\nOrder Date: ").append(orderDate);
+        sb.append("\nStatus:").append(status);
+        return sb.toString();
+    }
+
+
+
 }

@@ -55,4 +55,13 @@ public class Customer {
     }
     //print method needed
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Customer Id:").append(customerId);
+        sb.append("\nName: ").append(name);
+        sb.append("\nEmail:").append(email);
+        return sb.toString();
+    }
+    
 }
