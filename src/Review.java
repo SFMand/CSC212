@@ -2,7 +2,7 @@
 public class Review {
 
     private int reviewId;
-    private int countId = 501;
+    private static int countId = 501;
     private int rating;
     private String comment;
     private int customerId;

@@ -2,7 +2,7 @@
 public class Customer {
 
     private int customerId;
-    private int countId = 231;
+    private static int countId = 231;
     private String name;
     private String email;
     private List<Order> orders;

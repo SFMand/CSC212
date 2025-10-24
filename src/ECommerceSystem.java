@@ -9,6 +9,11 @@ public class ECommerceSystem {
     private List<Customer> allCustomers;
     private List<Order> allOrders;
 
+    private static final String PRODUCTS_FILE = "assets/prodcuts.csv";
+    private static final String CUSTOMERS_FILE = "assets/customers.csv";
+    private static final String ORDERS_FILE = "assets/orders.csv";
+    private static final String REVIEWS_FILE = "assets/reviews.csv";
+
     Scanner console = new Scanner(System.in);
 
     public ECommerceSystem() {
@@ -17,8 +22,8 @@ public class ECommerceSystem {
         this.allOrders = new LinkedList<>();
     }
 
-    public void loadFiles(String productsFile, String customersFile, String ordersFile, String reviewsFile) {
-        String file = productsFile;
+    public void loadFiles() {
+        String file = PRODUCTS_FILE;
         BufferedReader reader;
         String line;
         try {
@@ -33,7 +38,7 @@ public class ECommerceSystem {
             System.err.println(e.getMessage());
         }
 
-        file = customersFile;
+        file = CUSTOMERS_FILE;
 
         try {
             reader = new BufferedReader(new FileReader(file));
@@ -47,7 +52,7 @@ public class ECommerceSystem {
             System.err.println(e.getMessage());
         }
 
-        file = ordersFile;
+        file = ORDERS_FILE;
         try {
             reader = new BufferedReader(new FileReader(file));
             reader.readLine();
@@ -64,7 +69,7 @@ public class ECommerceSystem {
             System.err.println(e.getMessage());
         }
 
-        file = reviewsFile;
+        file = REVIEWS_FILE;
         try {
             reader = new BufferedReader(new FileReader(file));
             reader.readLine();
@@ -79,8 +84,15 @@ public class ECommerceSystem {
     }
 
     public void addProduct(Product p) {
-        //write to csv file
-        allProducts.insert(p);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("assets/prodcuts.csv", true));
+            writer.newLine();
+            writer.write(p.getProductId() + "," + p.getName() + "," + p.getPrice() + "," + p.getStock());
+            writer.close();
+            allProducts.insert(p);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public boolean removeProduct(int productId) {
@@ -166,7 +178,15 @@ public class ECommerceSystem {
 
     public void registerCustomer(Customer c) {
         //write to csv file
-        allCustomers.insert(c);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("assets/customers.csv", true));
+            writer.newLine();
+            writer.write(c.getCustomerId() + "," + c.getName() + "," + c.getEmail());
+            writer.close();
+            allCustomers.insert(c);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public Customer searchCustomerId(int customerId) {
@@ -178,7 +198,7 @@ public class ECommerceSystem {
                 if (allCustomers.retrieve().getCustomerId() == customerId) {
                     c = allCustomers.retrieve();
                 }
-                allProducts.findNext();
+                allCustomers.findNext();
             }
             if (allCustomers.retrieve().getCustomerId() == customerId) {
                 c = allCustomers.retrieve();
@@ -190,7 +210,26 @@ public class ECommerceSystem {
 
     public void addOrder(Order o) {
         //write to csv file
-        allOrders.insert(o);
+        StringBuilder orderPID = new StringBuilder();
+        orderPID.append('"');
+        if (!o.getOrderProducts().empty()) {
+            o.getOrderProducts().findFirst();
+            while (!o.getOrderProducts().last()) {
+                orderPID.append(o.getOrderProducts().retrieve().getProductId());
+                orderPID.append(';');
+            }
+            orderPID.append(o.getOrderProducts().retrieve().getProductId());
+            orderPID.append('"');
+        }
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("assets/orders.csv", true));
+            writer.newLine();
+            writer.write(o.getOrderId() + "," + o.getCustomerId() + "," + orderPID.toString() + "," + o.getTotalPrice() + "," + o.getOrderDate() + "," + o.getStatus());
+            writer.close();
+            allOrders.insert(o);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public Order placeOrder(Customer c, List<Product> products) {
@@ -198,15 +237,15 @@ public class ECommerceSystem {
         double totalPrice = 0;
         if (!products.empty()) {
             products.findFirst();
-            while (!products.last()) {
+            while (true) {
                 order.getOrderProducts().insert(products.retrieve());
                 totalPrice += products.retrieve().getPrice();
                 products.retrieve().setStock(products.retrieve().getStock() - 1);
+                if (products.last()) {
+                    break;
+                }
                 products.findNext();
             }
-            order.getOrderProducts().insert(products.retrieve());
-            totalPrice += products.retrieve().getPrice();
-            products.retrieve().setStock(products.retrieve().getStock() - 1);
         }
         order.setTotalPrice(totalPrice);
         c.getOrderHistory().insert(order);
@@ -278,148 +317,89 @@ public class ECommerceSystem {
         //get orders between two dates and return list
         List<Order> result = new LinkedList<>();
         if (!allOrders.empty()) {
-            Order o = null;
+            Order o;
             allOrders.findFirst();
-            while (!allOrders.last()) {
+            while (true) {
                 o = allOrders.retrieve();
                 LocalDate date = o.getOrderDate();
                 if (date.isAfter(startDate) && date.isBefore(endDate)) {
                     result.insert(o);
                 }
                 allOrders.findNext();
+                if (allOrders.last()) {
+                    break;
+                }
             }
-            o = allOrders.retrieve();
-            LocalDate date = o.getOrderDate();
-            if (date.isAfter(startDate) && date.isBefore(endDate)) {
-                result.insert(o);
 
-            }
         }
         return result;
     }
 
     public List<Review> getCustomerReviews(Customer c) {
         List<Review> reviewsByC = new LinkedList<>();
-        List<Order> ordersByC = c.getOrderHistory();
+        if (!allProducts.empty()) {
+            allProducts.findFirst();
+            while (true) {
+                List<Review> reviews = allProducts.retrieve().getReviews();
+                if (!reviews.empty()) {
+                    reviews.findFirst();
+                    while (true) {
+                        if (reviews.retrieve().getCustomerId() == c.getCustomerId()) {
+                            reviewsByC.insert(reviews.retrieve());
+                        }
 
-        if (!ordersByC.empty()) {
-            ordersByC.findFirst();
-            while (!ordersByC.last()) {
-                List<Product> productsInOrder = ordersByC.retrieve().getOrderProducts();
-                addReviewsToList(productsInOrder, reviewsByC);
-                ordersByC.findNext();
-            }
-            List<Product> productsInOrder = ordersByC.retrieve().getOrderProducts();
-            addReviewsToList(productsInOrder, reviewsByC);
-        }
-
-        return reviewsByC;
-    }
-
-    public void addReviewsToList(List<Product> products, List<Review> target) {
-        if (!products.empty()) {
-            products.findFirst();
-            while (!products.last()) {
-                List<Review> reviewsOfProduct = products.retrieve().getReviews();
-                if (!reviewsOfProduct.empty()) {
-                    reviewsOfProduct.findFirst();
-                    while (!reviewsOfProduct.last()) {
-                        target.insert(reviewsOfProduct.retrieve());
-                        reviewsOfProduct.findNext();
+                        reviews.findNext();
+                        if (reviews.last()) {
+                            break;
+                        }
                     }
-                    target.insert(reviewsOfProduct.retrieve());
-
                 }
-                products.findNext();
-            }
-            List<Review> reviewsOfProduct = products.retrieve().getReviews();
-            if (!reviewsOfProduct.empty()) {
-                reviewsOfProduct.findFirst();
-                while (!reviewsOfProduct.last()) {
-                    target.insert(reviewsOfProduct.retrieve());
-                    reviewsOfProduct.findNext();
+                allProducts.findNext();
+                if (allProducts.last()) {
+                    break;
                 }
-                target.insert(reviewsOfProduct.retrieve());
             }
         }
+        return reviewsByC;
+
     }
 
     public List<Product> findCommonProducts(int customerId1, int customerId2) {
         //find common products reviewed by two customers with product's average rating above 4.0(4.1, 4.2...5) and return list
         List<Product> result = new LinkedList<>();
         if (!allProducts.empty()) {
-            Product p = null;
-            List<Review> revs = null;
-            Review r = null;
-            boolean reviewedBy1 = false;
-            boolean reviewedBy2 = false;
             allProducts.findFirst();
-
-            while (!allProducts.last()) {
-                p = allProducts.retrieve();
-                revs = p.getReviews();
+            while (true) {
+                Product p = allProducts.retrieve();
+                boolean reviewedBy1 = false;
+                boolean reviewedBy2 = false;
+                List<Review> revs = p.getReviews();
                 if (!revs.empty()) {
                     revs.findFirst();
-                    while (!revs.last()) {
-                        r = revs.retrieve();
+                    while (true) {
+                        Review r = revs.retrieve();
                         if (r.getCustomerId() == customerId1) {
                             reviewedBy1 = true;
                         }
                         if (r.getCustomerId() == customerId2) {
                             reviewedBy2 = true;
                         }
+                        if (revs.last()) {
+                            break;
+                        }
                         revs.findNext();
-                    }
-
-                    r = revs.retrieve();
-                    if (r.getCustomerId() == customerId1) {
-                        reviewedBy1 = true;
-                    }
-                    if (r.getCustomerId() == customerId2) {
-                        reviewedBy2 = true;
                     }
                 }
 
                 if (reviewedBy1 && reviewedBy2 && p.averageRating() > 4.0) {
                     result.insert(p);
                 }
-
+                if (allProducts.last()) {
+                    break;
+                }
                 allProducts.findNext();
             }
-
-            // Check the last product
-            p = allProducts.retrieve();
-            reviewedBy1 = false;
-            reviewedBy2 = false;
-
-            revs = p.getReviews();
-            if (!revs.empty()) {
-                revs.findFirst();
-                while (!revs.last()) {
-                    r = revs.retrieve();
-                    if (r.getCustomerId() == customerId1) {
-                        reviewedBy1 = true;
-                    }
-                    if (r.getCustomerId() == customerId2) {
-                        reviewedBy2 = true;
-                    }
-                    revs.findNext();
-                }
-                // Check last review
-                Review lastReview = revs.retrieve();
-                if (lastReview.getCustomerId() == customerId1) {
-                    reviewedBy1 = true;
-                }
-                if (lastReview.getCustomerId() == customerId2) {
-                    reviewedBy2 = true;
-                }
-            }
-
-            if (reviewedBy1 && reviewedBy2 && p.averageRating() > 4.0) {
-                result.insert(p);
-            }
         }
-
         return result;
     }
     // add printing methods for lists

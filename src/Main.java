@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
         //testing file loading
         ECommerceSystem eCSystem = new ECommerceSystem();
-        eCSystem.loadFiles("assets/prodcuts.csv", "assets/customers.csv", "assets/orders.csv", "assets/reviews.csv");
+        eCSystem.loadFiles();
 
         //testing print values
         eCSystem.printAllProducts();

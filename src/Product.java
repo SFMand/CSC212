@@ -1,8 +1,10 @@
 
+import java.io.*;
+
 public class Product {
 
     private int productId;
-    private int countId = 151;
+    private static int countId = 151;
     private String name;
     private double price;
     private int stock;
@@ -15,16 +17,26 @@ public class Product {
         this.stock = stock;
         this.reviews = new LinkedList<>();
     }
-    public Product( int productId, String name, double price, int stock) {
+
+    public Product(int productId, String name, double price, int stock) {
         this.name = name;
         this.price = price;
         this.productId = productId;
         this.stock = stock;
         this.reviews = new LinkedList<>();
     }
+
     public void addReview(Review r) {
         //write to csv file
-        reviews.insert(r);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("assets/reviews.csv", true));
+            writer.newLine();
+            writer.write(r.getReviewId() + "," + productId + "," + r.getCustomerId() + "," + r.getRating() + "," + "\""+r.getComment()+"\"");
+            writer.close();
+            reviews.insert(r);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public double averageRating() {
@@ -45,15 +57,16 @@ public class Product {
         return avg;
     }
 
-    public void printReviews(){
-        System.out.println("=== REVIEWS OF " + this.getName().toUpperCase() + " ===");
-        this.getReviews().findFirst();
-        while(true){
-        System.out.println(this.getReviews().retrieve());
-        System.out.println("-------------------------");
-        if(this.getReviews().last())
-            break;
-         this.getReviews().findNext();   
+    public void printReviews() {
+        System.out.println("=== REVIEWS OF " + getName().toUpperCase() + " ===");
+        reviews.findFirst();
+        while (true) {
+            System.out.println(reviews.retrieve());
+            System.out.println("-------------------------");
+            if (reviews.last()) {
+                break;
+            }
+            reviews.findNext();
         }
     }
 
@@ -98,8 +111,7 @@ public class Product {
         this.reviews = reviews;
     }
 
-   //Print method needed
-
+    //Print method needed
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -86,4 +86,20 @@ public class ArrayList<T> implements List<T> {
         }
     }
 
+    @Override
+    public void print() {
+        if (!empty()) {
+            findFirst();
+            while (!last()) {
+                System.out.println(retrieve());
+                System.out.println("-------------------------");
+            }
+            System.out.println(retrieve());
+
+        } else {
+            System.err.println("List is empty");
+        }
+
+    }
+
 }

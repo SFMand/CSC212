@@ -2,7 +2,7 @@ import java.time.*;
 public class Order {
 
     private int orderId;
-    private int countId = 401;
+    private static int countId = 401;
     private int customerId;
     private double totalPrice;
     private LocalDate orderDate;
