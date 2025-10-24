@@ -45,6 +45,18 @@ public class Product {
         return avg;
     }
 
+    public void printReviews(){
+        System.out.println("=== REVIEWS OF " + this.getName().toUpperCase() + " ===");
+        this.getReviews().findFirst();
+        while(true){
+        System.out.println(this.getReviews().retrieve());
+        System.out.println("-------------------------");
+        if(this.getReviews().last())
+            break;
+         this.getReviews().findNext();   
+        }
+    }
+
     //  setter/getters
     public int getProductId() {
         return productId;
