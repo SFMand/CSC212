@@ -19,4 +19,6 @@ public interface List<T> {
 
     public void remove();
 
+    public void print();
+
 }

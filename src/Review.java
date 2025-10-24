@@ -2,7 +2,7 @@
 public class Review {
 
     private int reviewId;
-    private int countId = 501;
+    private static int countId = 501;
     private int rating;
     private String comment;
     private int customerId;
@@ -25,6 +25,8 @@ public class Review {
         this.comment = comment;
         this.rating = score;
     }
+
+    
     //  setter/getters
 
     public int getRating() {
@@ -59,5 +61,14 @@ public class Review {
         this.reviewId = reviewId;
     }
     //print method needed
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Review Id: ").append(reviewId);
+        sb.append("\nRating: ").append(rating);
+        sb.append("\nComment:").append(comment);
+        return sb.toString();
+    }
 
 }
