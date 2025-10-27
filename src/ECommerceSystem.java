@@ -63,6 +63,7 @@ public class ECommerceSystem {
                 for (String index : productString) {
                     o.getOrderProducts().insert(searchProductId(Integer.parseInt(index)));
                 }
+                searchCustomerId(Integer.parseInt(row[1])).getOrderHistory().insert(o);
                 allOrders.insert(o);
             }
         } catch (IOException | NumberFormatException e) {
