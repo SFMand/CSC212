@@ -104,18 +104,12 @@ public class ECommerceSystem {
         return false;
     }
 
-    public boolean updateProduct(Product p) {
-        if (searchProductId(p.getProductId()) != null) {
-            System.out.println("Enter new name:");
-            String name = console.next();
+    public boolean updateProduct(int id, String name, double price, int stock) {
+       Product p = searchProductId(id);
+        if (p != null) {
             p.setName(name);
-            System.out.println("Enter new price:");
-            double price = console.nextDouble();
             p.setPrice(price);
-            System.out.println("Enter new stock:");
-            int stock = console.nextInt();
             p.setStock(stock);
-
             return true;
         }
         return false;
