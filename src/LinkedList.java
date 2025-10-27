@@ -96,6 +96,7 @@ public class LinkedList<T> implements List<T> {
             while (!last()) {
                 System.out.println(retrieve());
                 System.out.println("-------------------------");
+                findNext();
             }
             System.out.println(retrieve());
 

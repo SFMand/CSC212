@@ -112,7 +112,7 @@ public class AdminFrame extends JFrame {
         findProductName.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = JOptionPane.showInputDialog(AdminFrame.this, "Enter Product ID:", "Find Product", JOptionPane.QUESTION_MESSAGE);
+                String name = JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Name:", "Find Product", JOptionPane.QUESTION_MESSAGE);
                 System.out.println("--- Searching for Product w/Name: " + name + " ---");
                 Product p = eCSystem.searchProductName(name);
                 if (p != null) {
