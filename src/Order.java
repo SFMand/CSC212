@@ -1,4 +1,6 @@
+
 import java.time.*;
+
 public class Order {
 
     private int orderId;
@@ -9,7 +11,7 @@ public class Order {
     private String status;
     private List<Product> orderProducts;
 
-    public Order(int orderId,int customerId, double totalPrice ,LocalDate orderDate, String status) {
+    public Order(int orderId, int customerId, double totalPrice, LocalDate orderDate, String status) {
         this.customerId = customerId;
         this.orderDate = orderDate;
         this.orderId = orderId;
@@ -17,6 +19,7 @@ public class Order {
         this.status = status;
         this.totalPrice = totalPrice;
     }
+
     public Order(int customerId, LocalDate orderDate) {
         this.customerId = customerId;
         this.orderDate = orderDate;
@@ -26,11 +29,11 @@ public class Order {
         this.totalPrice = 0;
     }
 
-    public void cancelOrder(){
+    public void cancelOrder() {
         this.status = "Canceled";
     }
 
-    public void updateStatus(String status){
+    public void updateStatus(String status) {
         this.status = status;
     }
     //  setter/getters
@@ -84,7 +87,6 @@ public class Order {
     }
 
     //print method needed
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -92,10 +94,20 @@ public class Order {
         sb.append("\nCustomer Id:").append(customerId);
         sb.append("\nTotal Price: ").append(totalPrice);
         sb.append("\nOrder Date: ").append(orderDate);
-        sb.append("\nStatus:").append(status);
+        sb.append("\nStatus: ").append(status);
+        sb.append("\nProducts:");
+        if (!orderProducts.empty()) {
+            orderProducts.findFirst();
+            while (true) {
+                sb.append('\n');
+                Product p = orderProducts.retrieve();
+                sb.append(p.getProductId()).append("-").append(p.getName());
+                orderProducts.findNext();
+                if (orderProducts.last()) {
+                    break;
+                }
+            }
+        }
         return sb.toString();
     }
-
-
-
 }

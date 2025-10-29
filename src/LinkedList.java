@@ -93,12 +93,14 @@ public class LinkedList<T> implements List<T> {
     public void print() {
         if (!empty()) {
             findFirst();
-            while (!last()) {
+            while (true) {
                 System.out.println(retrieve());
                 System.out.println("-------------------------");
+                if (last()) {
+                    break;
+                }
                 findNext();
             }
-            System.out.println(retrieve());
 
         } else {
             System.err.println("List is empty");

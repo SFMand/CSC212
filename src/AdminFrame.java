@@ -21,7 +21,7 @@ public class AdminFrame extends JFrame {
         System.out.println("Files loaded");
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(10, 1, 5, 5));
+        buttonPanel.setLayout(new GridLayout(0, 1, 1, 1));
 
         JButton listProducts = new JButton("List All Products");
         JButton listCustomers = new JButton("List All Customers");
@@ -38,26 +38,40 @@ public class AdminFrame extends JFrame {
         JButton topRated = new JButton("List Top Rated Products");
         JButton ordersBetweenDates = new JButton("List Orders Between Two Dates");
         JButton customerReviews = new JButton("List a Customer's Reviews");
-        JButton commonProducts = new JButton("List Common Products Between Two Customers");
-        //missing buttons
-        //functions including review are bugged
+        JButton commonProducts = new JButton("List Common Products");
+        JButton customerOrderHistory = new JButton("List Customer's Order History");
+        JButton addReview = new JButton("Add Review to Product");
+        JButton avgReview = new JButton("Get Average Rating of Product");
+        JButton cancelOrder = new JButton("Cancel Order");
+        JButton updateOrder = new JButton("Update Order Status");
+        //check for missing buttons
 
         buttonPanel.add(listProducts);
         buttonPanel.add(listCustomers);
+        buttonPanel.add(new JLabel("Product Operations"));
         buttonPanel.add(addProduct);
         buttonPanel.add(findProduct);
         buttonPanel.add(findProductName);
         buttonPanel.add(removeProduct);
         buttonPanel.add(updateProduct);
         buttonPanel.add(TOSProducts);
+        buttonPanel.add(new JLabel("Customer Operations"));
         buttonPanel.add(registerCustomer);
+        buttonPanel.add(placeOrder);
         buttonPanel.add(findCustomer);
-        buttonPanel.add(placeOrder); //missing implementation
-        buttonPanel.add(findOrder);
-        buttonPanel.add(topRated);
-        buttonPanel.add(ordersBetweenDates); //missing implementation
         buttonPanel.add(customerReviews);
+        buttonPanel.add(customerOrderHistory);
+        buttonPanel.add(new JLabel("Order Operations"));
+        buttonPanel.add(findOrder);
+        buttonPanel.add(updateOrder); //missing
+        buttonPanel.add(cancelOrder); //missing
+        buttonPanel.add(new JLabel("Review Operations"));
+        buttonPanel.add(addReview); //missing
+        buttonPanel.add(avgReview); //missing
+        buttonPanel.add(new JLabel("Other Requirements"));
         buttonPanel.add(commonProducts);
+        buttonPanel.add(topRated);
+        buttonPanel.add(ordersBetweenDates); //missing
 
         consoleOutputArea = new JTextArea();
         consoleOutputArea.setEditable(false);
@@ -228,24 +242,28 @@ public class AdminFrame extends JFrame {
         placeOrder.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Customer ID", "Place Order", JOptionPane.QUESTION_MESSAGE));
-                Customer c = eCSystem.searchCustomerId(id);
-                if (c != null) {
-                    List<Product> products = new LinkedList<>();
-                    do {
-                        id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Id", "Place Order", JOptionPane.QUESTION_MESSAGE));
-                        Product p = eCSystem.searchProductId(id);
-                        if (p != null && p.getStock() > 0) {
-                            products.insert(p);
+                try {
+                    int id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Customer ID", "Place Order", JOptionPane.QUESTION_MESSAGE));
+                    Customer c = eCSystem.searchCustomerId(id);
+                    if (c != null) {
+                        List<Product> products = new LinkedList<>();
+                        do {
+                            id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Id", "Place Order", JOptionPane.QUESTION_MESSAGE));
+                            Product p = eCSystem.searchProductId(id);
+                            if (p != null && p.getStock() > 0) {
+                                products.insert(p);
+                            } else {
+                                JOptionPane.showMessageDialog(AdminFrame.this, "Product Id Invalid, or Stock is Zero", "Place Order", JOptionPane.ERROR_MESSAGE);
+                            }
+                        } while (JOptionPane.showConfirmDialog(AdminFrame.this, "Continue Adding Products?", "Place Order", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION);
+                        if (!products.empty()) {
+                            eCSystem.placeOrder(c, products);
                         } else {
-                            JOptionPane.showMessageDialog(AdminFrame.this, "Product Id Invalid, or Stock is Zero", "Place Order", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(AdminFrame.this, "No Products were added", "Place Order", JOptionPane.ERROR_MESSAGE);
                         }
-                    } while (JOptionPane.showConfirmDialog(AdminFrame.this, "Continue Adding Products?", "Place Order", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION);
-                    if (!products.empty()) {
-                        eCSystem.placeOrder(c, products);
-                    } else {
-                        JOptionPane.showMessageDialog(AdminFrame.this, "No Products were added", "Place Order", JOptionPane.ERROR_MESSAGE);
                     }
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid Input: " + ex.getMessage());
                 }
             }
         });
@@ -273,7 +291,7 @@ public class AdminFrame extends JFrame {
         topRated.addActionListener(new ActionListener() { //bugged
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("--- Listing Top Rated Products ---");
+                System.out.println("--- Listing Top 3 Rated Products ---");
                 eCSystem.getTopRatedProducts().print();
             }
 
@@ -295,6 +313,7 @@ public class AdminFrame extends JFrame {
                     Customer c = eCSystem.searchCustomerId(id);
 
                     if (c != null) {
+                        System.out.println("--- Listing All Reviews of Customer with Id: " + id + " ---");
                         eCSystem.getCustomerReviews(c).print();
                     } else {
                         System.out.println("Customer not Found.");
@@ -315,6 +334,7 @@ public class AdminFrame extends JFrame {
                     if (eCSystem.searchCustomerId(id1) != null) {
                         int id2 = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Customer 2 ID:", "Find Customers", JOptionPane.QUESTION_MESSAGE));
                         if (eCSystem.searchCustomerId(id2) != null) {
+                            System.out.println("--- Listing All Products Ordered by " + id1 + " / " + id2 + "---");
                             eCSystem.findCommonProducts(id1, id2).print();
                         } else {
                             System.out.println("Customer 2 not found.");
@@ -326,6 +346,28 @@ public class AdminFrame extends JFrame {
                 } catch (NumberFormatException ex) {
                     System.out.println("Invalid Input: " + ex.getMessage());
                 }
+            }
+
+        });
+
+        customerOrderHistory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Customer Id", "Order History", JOptionPane.QUESTION_MESSAGE));
+                    Customer c = eCSystem.searchCustomerId(id);
+                    if (c != null) {
+                        System.out.println("--- Listing All Order of Customer with Id: " + id + " ---");
+
+                        c.getOrderHistory().print();
+                    } else {
+                        System.out.println("Customer not found.");
+                    }
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid Input: " + ex.getMessage());
+
+                }
+
             }
 
         });

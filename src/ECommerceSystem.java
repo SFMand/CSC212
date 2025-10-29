@@ -105,7 +105,7 @@ public class ECommerceSystem {
         return false;
     }
 
-    public boolean updateProduct(int id, String name, double price, int stock) {
+    public boolean updateProduct(int id, String name, double price, int stock) { //needs overwrite line in csv
         Product p = searchProductId(id);
         if (p != null) {
             p.setName(name);
@@ -239,9 +239,10 @@ public class ECommerceSystem {
         if (!products.empty()) {
             products.findFirst();
             while (true) {
-                order.getOrderProducts().insert(products.retrieve());
-                totalPrice += products.retrieve().getPrice();
-                products.retrieve().setStock(products.retrieve().getStock() - 1);
+                Product p = products.retrieve();
+                order.getOrderProducts().insert(p);
+                totalPrice += p.getPrice();
+                p.setStock(p.getStock() - 1);
                 if (products.last()) {
                     break;
                 }
