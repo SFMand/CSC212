@@ -19,7 +19,6 @@ public class AdminFrame extends JFrame {
         eCSystem = new ECommerceSystem();
 
         eCSystem.loadFiles();
-        System.out.println("Files loaded");
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(0, 1, 1, 1));
@@ -46,7 +45,6 @@ public class AdminFrame extends JFrame {
         JButton avgReview = new JButton("Get Average Rating of Product");
         JButton cancelOrder = new JButton("Cancel Order");
         JButton updateOrder = new JButton("Update Order Status");
-        //check for missing buttons
 
         buttonPanel.add(listProducts);
         buttonPanel.add(listCustomers);
@@ -429,7 +427,7 @@ public class AdminFrame extends JFrame {
             }
         });
 
-        customerReviews.addActionListener(new ActionListener() { //bugged
+        customerReviews.addActionListener(new ActionListener() { 
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
