@@ -21,7 +21,9 @@ public class WelcomeFrame extends JFrame {
         continueButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new AdminFrame().setVisible(true);
+                JFrame frame = new AdminFrame();
+                frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                frame.setVisible(true);
                 dispose();
             }
 
