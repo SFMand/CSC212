@@ -153,6 +153,18 @@ public class ECommerceSystem {
         return p;
     }
 
+    public void addReviewToProduct(Product p, Review r) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(REVIEWS_FILE, true));
+            writer.newLine();
+            writer.write(r.getReviewId() + "," + p.getProductId() + "," + r.getCustomerId() + "," + r.getRating() + "," + "\"" + r.getComment() + "\"");
+            writer.close();
+            p.getReviews().insert(r);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
     public List<Product> trackOutOfStockProducts() {
         List<Product> tosp = new LinkedList<>();
         if (!allProducts.empty()) {
@@ -356,10 +368,11 @@ public class ECommerceSystem {
                         }
                     }
                 }
-                allProducts.findNext();
                 if (allProducts.last()) {
                     break;
                 }
+                allProducts.findNext();
+
             }
         }
         return reviewsByC;
