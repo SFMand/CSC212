@@ -109,7 +109,7 @@ public class AdminFrame extends JFrame {
         addProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                
                 try {
                     String name = JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Name:", "Add Product", JOptionPane.QUESTION_MESSAGE);
                     double price = Double.parseDouble(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Price:", "Add Product", JOptionPane.QUESTION_MESSAGE));
