@@ -42,6 +42,7 @@ public class AdminFrame extends JFrame {
         JButton commonProducts = new JButton("List Common Products");
         JButton customerOrderHistory = new JButton("List Customer's Order History");
         JButton addReview = new JButton("Add Review to Product");
+        JButton updateReview = new JButton("Update Review");
         JButton avgReview = new JButton("Get Average Rating of Product");
         JButton cancelOrder = new JButton("Cancel Order");
         JButton updateOrder = new JButton("Update Order Status");
@@ -64,15 +65,16 @@ public class AdminFrame extends JFrame {
         buttonPanel.add(customerOrderHistory);
         buttonPanel.add(new JLabel("Order Operations"));
         buttonPanel.add(findOrder);
-        buttonPanel.add(updateOrder); 
-        buttonPanel.add(cancelOrder); 
+        buttonPanel.add(updateOrder);
+        buttonPanel.add(cancelOrder);
         buttonPanel.add(new JLabel("Review Operations"));
-        buttonPanel.add(addReview); 
-        buttonPanel.add(avgReview); 
+        buttonPanel.add(addReview);
+        buttonPanel.add(updateReview);
+        buttonPanel.add(avgReview);
         buttonPanel.add(new JLabel("Other Requirements"));
         buttonPanel.add(commonProducts);
         buttonPanel.add(topRated);
-        buttonPanel.add(ordersBetweenDates); 
+        buttonPanel.add(ordersBetweenDates);
 
         consoleOutputArea = new JTextArea();
         consoleOutputArea.setEditable(false);
@@ -147,7 +149,7 @@ public class AdminFrame extends JFrame {
                 try {
                     int id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Id: ", "Remove Product", JOptionPane.QUESTION_MESSAGE));
                     if (eCSystem.removeProduct(id)) {
-                        System.out.println("Product Removed Succesfuly");
+                        System.out.println("Product Removed Succesfully");
                     } else {
                         System.out.println("Product Not Found");
                     }
@@ -317,7 +319,7 @@ public class AdminFrame extends JFrame {
                     Order o = eCSystem.searchOrderId(id);
                     if (o != null) {
                         o.cancelOrder();
-                        System.out.println("--- Order " + id + " Canceled ---");
+                        System.out.println("--- Order " + id + " Cancelled ---");
                     } else {
                         System.out.println("Order not found.");
                     }
@@ -337,8 +339,8 @@ public class AdminFrame extends JFrame {
                         int pID = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product ID:", "Add Review", JOptionPane.QUESTION_MESSAGE));
                         Product p = eCSystem.searchProductId(pID);
                         if (p != null) {
-                            int rating = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Rating (1-5):", "Add Review", JOptionPane.QUESTION_MESSAGE));
                             String comment = JOptionPane.showInputDialog(AdminFrame.this, "Enter Comment:", "Add Review", JOptionPane.QUESTION_MESSAGE);
+                            int rating = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Rating (1-5):", "Add Review", JOptionPane.QUESTION_MESSAGE));
                             if (comment != null) {
                                 Review r = new Review(comment, rating, cID);
                                 eCSystem.addReviewToProduct(p, r);
@@ -354,6 +356,28 @@ public class AdminFrame extends JFrame {
                     System.out.println("Invalid Input: " + ex.getMessage());
                 }
             }
+        });
+
+        updateReview.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Review ID:", "Update Review", JOptionPane.QUESTION_MESSAGE));
+                    Review r = eCSystem.searchReviewId(id);
+                    if (r != null) {
+                        String comment = JOptionPane.showInputDialog(AdminFrame.this, "Enter New Comment:", "Update Review", JOptionPane.QUESTION_MESSAGE);
+                        int rating = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter New Rating:", "Update Review", JOptionPane.QUESTION_MESSAGE));
+                        if (comment != null) {
+                            r.editReview(comment, rating);
+                        }
+                    } else {
+                        System.out.println("Review not found.");
+                    }
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid Input: " + ex.getMessage());
+                }
+            }
+
         });
 
         avgReview.addActionListener(new ActionListener() {
@@ -401,7 +425,7 @@ public class AdminFrame extends JFrame {
 
                 } catch (java.time.format.DateTimeParseException ex) {
                     System.out.println("Invalid Date Format. Use YYYY-MM-DD. " + ex.getMessage());
-                } 
+                }
             }
         });
 
@@ -430,9 +454,9 @@ public class AdminFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    int id1 = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Customer 1 ID:", "Find Customers", JOptionPane.QUESTION_MESSAGE));
+                    int id1 = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Customer 1 Id:", "Find Customers", JOptionPane.QUESTION_MESSAGE));
                     if (eCSystem.searchCustomerId(id1) != null) {
-                        int id2 = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Customer 2 ID:", "Find Customers", JOptionPane.QUESTION_MESSAGE));
+                        int id2 = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Customer 2 Id:", "Find Customers", JOptionPane.QUESTION_MESSAGE));
                         if (eCSystem.searchCustomerId(id2) != null) {
                             System.out.println("--- Listing All Products Ordered by " + id1 + " / " + id2 + "---");
                             eCSystem.findCommonProducts(id1, id2).print();
@@ -458,7 +482,6 @@ public class AdminFrame extends JFrame {
                     Customer c = eCSystem.searchCustomerId(id);
                     if (c != null) {
                         System.out.println("--- Listing All Order of Customer with Id: " + id + " ---");
-
                         c.getOrderHistory().print();
                     } else {
                         System.out.println("Customer not found.");
