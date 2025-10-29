@@ -26,18 +26,6 @@ public class Product {
         this.reviews = new LinkedList<>();
     }
 
-    public void addReview(Review r) {
-        //write to csv file
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("assets/reviews.csv", true));
-            writer.newLine();
-            writer.write(r.getReviewId() + "," + productId + "," + r.getCustomerId() + "," + r.getRating() + "," + "\""+r.getComment()+"\"");
-            writer.close();
-            reviews.insert(r);
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-    }
 
     public double averageRating() {
         double avg = 0;
