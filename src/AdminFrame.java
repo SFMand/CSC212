@@ -288,7 +288,7 @@ public class AdminFrame extends JFrame {
 
         });
 
-        topRated.addActionListener(new ActionListener() { //bugged
+        topRated.addActionListener(new ActionListener() { 
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("--- Listing Top 3 Rated Products ---");
