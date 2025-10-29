@@ -300,11 +300,13 @@ public class ECommerceSystem {
                         }
                         reviews.findNext();
                     }
-                    if (allProducts.last()) {
+                    
+                }
+
+                if (allProducts.last()) {
                         break;
                     }
                     allProducts.findNext();
-                }
             }
         }
         return r;
@@ -482,6 +484,7 @@ public class ECommerceSystem {
             System.out.println("Customer ID: " + c.getCustomerId());
             System.out.println("Name: " + c.getName());
             System.out.println("Email: " + c.getEmail());
+            System.out.println("-------------------------");
 
             if (allCustomers.last()) {
                 break;

@@ -30,7 +30,7 @@ public class Order {
     }
 
     public void cancelOrder() {
-        this.status = "Canceled";
+        this.status = "Cancelled";
     }
 
     public void updateStatus(String status) {
