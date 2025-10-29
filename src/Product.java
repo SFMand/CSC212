@@ -1,5 +1,4 @@
 
-import java.io.*;
 
 public class Product {
 
@@ -45,18 +44,6 @@ public class Product {
         return avg;
     }
 
-    public void printReviews() {
-        System.out.println("=== REVIEWS OF " + getName().toUpperCase() + " ===");
-        reviews.findFirst();
-        while (true) {
-            System.out.println(reviews.retrieve());
-            System.out.println("-------------------------");
-            if (reviews.last()) {
-                break;
-            }
-            reviews.findNext();
-        }
-    }
 
     //  setter/getters
     public int getProductId() {

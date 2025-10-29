@@ -25,6 +25,7 @@ public class AdminFrame extends JFrame {
 
         JButton listProducts = new JButton("List All Products");
         JButton listCustomers = new JButton("List All Customers");
+        JButton listOrders = new JButton("List All Orders");
         JButton addProduct = new JButton("Add Product");
         JButton findProduct = new JButton("Find Product by ID");
         JButton findProductName = new JButton("Find Product by Name");
@@ -48,6 +49,7 @@ public class AdminFrame extends JFrame {
 
         buttonPanel.add(listProducts);
         buttonPanel.add(listCustomers);
+        buttonPanel.add(listOrders);
         buttonPanel.add(new JLabel("Product Operations"));
         buttonPanel.add(addProduct);
         buttonPanel.add(findProduct);
@@ -102,6 +104,15 @@ public class AdminFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("--- Listing All Customers ---");
                 eCSystem.printAllCustomers();
+            }
+
+        });
+
+        listOrders.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("--- Listing All Orders ---");
+                eCSystem.printAllOrders();
             }
 
         });
