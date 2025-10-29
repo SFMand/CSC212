@@ -353,7 +353,7 @@ public class AdminFrame extends JFrame {
                             if (comment != null) {
                                 Review r = new Review(comment, rating, cID);
                                 eCSystem.addReviewToProduct(p, r);
-                                System.out.println("--- Review added to " + p.getName() + " ---");
+                                System.out.println("--- Review "+ r.getReviewId() +" added to " + p.getName() + " ---");
                             }
                         } else {
                             System.out.println("Product not found.");
@@ -377,6 +377,7 @@ public class AdminFrame extends JFrame {
                         String comment = JOptionPane.showInputDialog(AdminFrame.this, "Enter New Comment:", "Update Review", JOptionPane.QUESTION_MESSAGE);
                         int rating = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter New Rating:", "Update Review", JOptionPane.QUESTION_MESSAGE));
                         if (comment != null) {
+                            System.out.println("--- Review " + id + " Updated ---");
                             r.editReview(comment, rating);
                         }
                     } else {
