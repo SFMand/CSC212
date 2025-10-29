@@ -119,6 +119,7 @@ public class Product {
         sb.append("\nName: ").append(name);
         sb.append("\nPrice: ").append(price);
         sb.append("\nStock: ").append(stock);
+        sb.append("\nAverage Rating: ").append(averageRating());
         return sb.toString();
     }
 
