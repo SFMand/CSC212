@@ -21,7 +21,7 @@ public class Review {
         this.reviewId = reviewId;
     }
 
-    public void editReview(String comment, int score) {
+    public void editReview(String comment, int score) { //needs overwrite line in csv
         this.comment = comment;
         this.rating = score;
     }

@@ -1,6 +1,5 @@
 
-import java.io.*; //for file loading, should also update files when adding items
-import java.util.Scanner;
+import java.io.*;
 import java.time.*;
 
 public class ECommerceSystem {
@@ -13,8 +12,6 @@ public class ECommerceSystem {
     private static final String CUSTOMERS_FILE = "assets/customers.csv";
     private static final String ORDERS_FILE = "assets/orders.csv";
     private static final String REVIEWS_FILE = "assets/reviews.csv";
-
-    Scanner console = new Scanner(System.in);
 
     public ECommerceSystem() {
         this.allProducts = new LinkedList<>();
@@ -282,6 +279,35 @@ public class ECommerceSystem {
             }
         }
         return o;
+    }
+
+    public Review searchReviewId(int reviewId) {
+        Review r = null;
+        if (!allProducts.empty()) {
+            allProducts.findFirst();
+            while (true) {
+                Product p = allProducts.retrieve();
+                List<Review> reviews = p.getReviews();
+
+                if (!reviews.empty()) {
+                    reviews.findFirst();
+                    while (true) {
+                        if (reviews.retrieve().getReviewId() == reviewId) {
+                            r = reviews.retrieve();
+                        }
+                        if (reviews.last()) {
+                            break;
+                        }
+                        reviews.findNext();
+                    }
+                    if (allProducts.last()) {
+                        break;
+                    }
+                    allProducts.findNext();
+                }
+            }
+        }
+        return r;
     }
 
     public List<Product> getTopRatedProducts() {
