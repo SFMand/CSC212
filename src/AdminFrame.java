@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
-
 public class AdminFrame extends JFrame {
 
     private JTextArea consoleOutputArea;
@@ -100,8 +99,9 @@ public class AdminFrame extends JFrame {
                     String name = JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Name:", "Add Product", JOptionPane.QUESTION_MESSAGE);
                     double price = Double.parseDouble(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Price:", "Add Product", JOptionPane.QUESTION_MESSAGE));
                     int stock = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Stock:", "Add Product", JOptionPane.QUESTION_MESSAGE));
-                    if (name != null)
-                    eCSystem.addProduct(new Product(name, price, stock));
+                    if (name != null) {
+                        eCSystem.addProduct(new Product(name, price, stock));
+                    }
 
                 } catch (NumberFormatException ex) {
                     System.out.println("Invalid Input: " + ex.getMessage());
@@ -170,8 +170,9 @@ public class AdminFrame extends JFrame {
                     String name = JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Name:", "Update Product", JOptionPane.QUESTION_MESSAGE);
                     double price = Double.parseDouble(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Price:", "Update Product", JOptionPane.QUESTION_MESSAGE));
                     int stock = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Stock:", "Update Product", JOptionPane.QUESTION_MESSAGE));
-                    if (name != null)
-                    eCSystem.updateProduct(id, name, price, stock);
+                    if (name != null) {
+                        eCSystem.updateProduct(id, name, price, stock);
+                    }
                 } catch (NumberFormatException ex) {
                     System.out.println("Invalid Input: " + ex.getMessage());
                 }
@@ -227,8 +228,25 @@ public class AdminFrame extends JFrame {
         placeOrder.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //missing implementation
-
+                int id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Customer ID", "Place Order", JOptionPane.QUESTION_MESSAGE));
+                Customer c = eCSystem.searchCustomerId(id);
+                if (c != null) {
+                    List<Product> products = new LinkedList<>();
+                    do {
+                        id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Id", "Place Order", JOptionPane.QUESTION_MESSAGE));
+                        Product p = eCSystem.searchProductId(id);
+                        if (p != null && p.getStock() > 0) {
+                            products.insert(p);
+                        } else {
+                            JOptionPane.showMessageDialog(AdminFrame.this, "Product Id Invalid, or Stock is Zero", "Place Order", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } while (JOptionPane.showConfirmDialog(AdminFrame.this, "Continue Adding Products?", "Place Order", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION);
+                    if (!products.empty()) {
+                        eCSystem.placeOrder(c, products);
+                    } else {
+                        JOptionPane.showMessageDialog(AdminFrame.this, "No Products were added", "Place Order", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
             }
         });
 
@@ -264,7 +282,7 @@ public class AdminFrame extends JFrame {
         ordersBetweenDates.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+
                 //missing implementation
             }
         });

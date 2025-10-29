@@ -86,7 +86,7 @@ public class ECommerceSystem {
 
     public void addProduct(Product p) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("assets/prodcuts.csv", true));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(PRODUCTS_FILE, true));
             writer.newLine();
             writer.write(p.getProductId() + "," + p.getName() + "," + p.getPrice() + "," + p.getStock());
             writer.close();
@@ -106,7 +106,7 @@ public class ECommerceSystem {
     }
 
     public boolean updateProduct(int id, String name, double price, int stock) {
-       Product p = searchProductId(id);
+        Product p = searchProductId(id);
         if (p != null) {
             p.setName(name);
             p.setPrice(price);
@@ -121,14 +121,14 @@ public class ECommerceSystem {
         if (!allProducts.empty()) {
             allProducts.findFirst();
 
-            while (!allProducts.last()) {
+            while (true) {
                 if (allProducts.retrieve().getProductId() == productId) {
                     p = allProducts.retrieve();
                 }
+                if (allProducts.last()) {
+                    break;
+                }
                 allProducts.findNext();
-            }
-            if (allProducts.retrieve().getProductId() == productId) {
-                p = allProducts.retrieve();
             }
         }
         return p;
@@ -139,15 +139,16 @@ public class ECommerceSystem {
         if (!allProducts.empty()) {
             allProducts.findFirst();
 
-            while (!allProducts.last()) {
+            while (true) {
                 if (allProducts.retrieve().getName().equalsIgnoreCase(name)) {
                     p = allProducts.retrieve();
                 }
+                if (allProducts.last()) {
+                    break;
+                }
                 allProducts.findNext();
             }
-            if (allProducts.retrieve().getName().equalsIgnoreCase(name)) {
-                p = allProducts.retrieve();
-            }
+
         }
         return p;
     }
@@ -157,16 +158,16 @@ public class ECommerceSystem {
         if (!allProducts.empty()) {
             allProducts.findFirst();
 
-            while (!allProducts.last()) {
+            while (true) {
                 if (allProducts.retrieve().getStock() == 0) {
                     tosp.insert(allProducts.retrieve());
                 }
+                if (allProducts.last()) {
+                    break;
+                }
                 allProducts.findNext();
             }
-            if (allProducts.retrieve().getStock() == 0) {
-                tosp.insert(allProducts.retrieve());
 
-            }
         }
         return tosp;
     }
@@ -174,7 +175,7 @@ public class ECommerceSystem {
     public void registerCustomer(Customer c) {
         //write to csv file
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("assets/customers.csv", true));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(CUSTOMERS_FILE, true));
             writer.newLine();
             writer.write(c.getCustomerId() + "," + c.getName() + "," + c.getEmail());
             writer.close();
@@ -189,14 +190,14 @@ public class ECommerceSystem {
         if (!allCustomers.empty()) {
             allCustomers.findFirst();
 
-            while (!allCustomers.last()) {
+            while (true) {
                 if (allCustomers.retrieve().getCustomerId() == customerId) {
                     c = allCustomers.retrieve();
                 }
+                if (allCustomers.last()) {
+                    break;
+                }
                 allCustomers.findNext();
-            }
-            if (allCustomers.retrieve().getCustomerId() == customerId) {
-                c = allCustomers.retrieve();
             }
         }
         return c;
@@ -209,15 +210,20 @@ public class ECommerceSystem {
         orderPID.append('"');
         if (!o.getOrderProducts().empty()) {
             o.getOrderProducts().findFirst();
-            while (!o.getOrderProducts().last()) {
+            while (true) {
+                if (orderPID.length() > 1) {
+                    orderPID.append(';');
+                }
                 orderPID.append(o.getOrderProducts().retrieve().getProductId());
-                orderPID.append(';');
+                if (o.getOrderProducts().last()) {
+                    break;
+                }
+                o.getOrderProducts().findNext();
             }
-            orderPID.append(o.getOrderProducts().retrieve().getProductId());
             orderPID.append('"');
         }
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("assets/orders.csv", true));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(ORDERS_FILE, true));
             writer.newLine();
             writer.write(o.getOrderId() + "," + o.getCustomerId() + "," + orderPID.toString() + "," + o.getTotalPrice() + "," + o.getOrderDate() + "," + o.getStatus());
             writer.close();
@@ -252,14 +258,14 @@ public class ECommerceSystem {
         Order o = null;
         if (!allOrders.empty()) {
             allOrders.findFirst();
-            while (!allOrders.last()) {
+            while (true) {
                 if (allOrders.retrieve().getOrderId() == orderId) {
                     o = allOrders.retrieve();
                 }
+                if (allOrders.last()) {
+                    break;
+                }
                 allOrders.findNext();
-            }
-            if (allOrders.retrieve().getOrderId() == orderId) {
-                o = allOrders.retrieve();
             }
         }
         return o;
