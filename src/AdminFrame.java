@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.time.*;
 
 public class AdminFrame extends JFrame {
 
@@ -63,15 +64,15 @@ public class AdminFrame extends JFrame {
         buttonPanel.add(customerOrderHistory);
         buttonPanel.add(new JLabel("Order Operations"));
         buttonPanel.add(findOrder);
-        buttonPanel.add(updateOrder); //missing
-        buttonPanel.add(cancelOrder); //missing
+        buttonPanel.add(updateOrder); 
+        buttonPanel.add(cancelOrder); 
         buttonPanel.add(new JLabel("Review Operations"));
-        buttonPanel.add(addReview); //missing
-        buttonPanel.add(avgReview); //missing
+        buttonPanel.add(addReview); 
+        buttonPanel.add(avgReview); 
         buttonPanel.add(new JLabel("Other Requirements"));
         buttonPanel.add(commonProducts);
         buttonPanel.add(topRated);
-        buttonPanel.add(ordersBetweenDates); //missing
+        buttonPanel.add(ordersBetweenDates); 
 
         consoleOutputArea = new JTextArea();
         consoleOutputArea.setEditable(false);
@@ -211,7 +212,6 @@ public class AdminFrame extends JFrame {
                     String email = JOptionPane.showInputDialog(AdminFrame.this, "Enter Customer Email:", "Register Customer", JOptionPane.QUESTION_MESSAGE);
                     if (email != null) {
                         eCSystem.registerCustomer(new Customer(name, email));
-
                     }
                 }
 
@@ -288,7 +288,93 @@ public class AdminFrame extends JFrame {
 
         });
 
-        topRated.addActionListener(new ActionListener() { 
+        updateOrder.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Order ID:", "Update Order Status", JOptionPane.QUESTION_MESSAGE));
+                    Order o = eCSystem.searchOrderId(id);
+                    if (o != null) {
+                        String newStatus = JOptionPane.showInputDialog(AdminFrame.this, "Enter New Status:", "Update Order Status", JOptionPane.QUESTION_MESSAGE);
+                        if (newStatus != null) {
+                            o.updateStatus(newStatus);
+                            System.out.println("--- Order " + id + " Status Updated ---");
+                        }
+                    } else {
+                        System.out.println("Order not found.");
+                    }
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid Input: " + ex.getMessage());
+                }
+            }
+        });
+
+        cancelOrder.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Order ID:", "Cancel Order", JOptionPane.QUESTION_MESSAGE));
+                    Order o = eCSystem.searchOrderId(id);
+                    if (o != null) {
+                        o.cancelOrder();
+                        System.out.println("--- Order " + id + " Canceled ---");
+                    } else {
+                        System.out.println("Order not found.");
+                    }
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid Input: " + ex.getMessage());
+                }
+            }
+        });
+
+        addReview.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int cID = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Customer ID:", "Add Review", JOptionPane.QUESTION_MESSAGE));
+                    Customer c = eCSystem.searchCustomerId(cID);
+                    if (c != null) {
+                        int pID = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product ID:", "Add Review", JOptionPane.QUESTION_MESSAGE));
+                        Product p = eCSystem.searchProductId(pID);
+                        if (p != null) {
+                            int rating = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Rating (1-5):", "Add Review", JOptionPane.QUESTION_MESSAGE));
+                            String comment = JOptionPane.showInputDialog(AdminFrame.this, "Enter Comment:", "Add Review", JOptionPane.QUESTION_MESSAGE);
+                            if (comment != null) {
+                                Review r = new Review(comment, rating, cID);
+                                eCSystem.addReviewToProduct(p, r);
+                                System.out.println("--- Review added to " + p.getName() + " ---");
+                            }
+                        } else {
+                            System.out.println("Product not found.");
+                        }
+                    } else {
+                        System.out.println("Customer not found.");
+                    }
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid Input: " + ex.getMessage());
+                }
+            }
+        });
+
+        avgReview.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product ID:", "Get Average Rating", JOptionPane.QUESTION_MESSAGE));
+                    Product p = eCSystem.searchProductId(id);
+                    if (p != null) {
+                        System.out.println("--- Average Rating for " + p.getName() + " ---");
+                        System.out.printf("Average Rating: %.2f\n", p.averageRating());
+                    } else {
+                        System.out.println("Product not found.");
+                    }
+                } catch (NumberFormatException ex) {
+                    System.out.println("Invalid Input: " + ex.getMessage());
+                }
+            }
+        });
+
+        topRated.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("--- Listing Top 3 Rated Products ---");
@@ -300,8 +386,22 @@ public class AdminFrame extends JFrame {
         ordersBetweenDates.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                    LocalDate startDate = LocalDate.parse(JOptionPane.showInputDialog(AdminFrame.this, "Enter Start Date (YYYY-MM-DD):", "Orders Between Dates", JOptionPane.QUESTION_MESSAGE));
+                    LocalDate endDate = LocalDate.parse(JOptionPane.showInputDialog(AdminFrame.this, "Enter End Date (YYYY-MM-DD):", "Orders Between Dates", JOptionPane.QUESTION_MESSAGE));
 
-                //missing implementation
+                    System.out.println("--- Listing Orders Between " + startDate + " and " + endDate + " ---");
+                    List<Order> orders = eCSystem.getOrdersBetweenDates(startDate, endDate);
+
+                    if (orders.empty()) {
+                        System.out.println("No Orders Found.");
+                    } else {
+                        orders.print();
+                    }
+
+                } catch (java.time.format.DateTimeParseException ex) {
+                    System.out.println("Invalid Date Format. Use YYYY-MM-DD. " + ex.getMessage());
+                } 
             }
         });
 
