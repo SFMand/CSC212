@@ -445,7 +445,6 @@ public class ECommerceSystem {
         }
         return result;
     }
-    // add printing methods for lists
 
     public void printAllProducts() {
         System.out.println("=== PRODUCTS ===");
@@ -510,7 +509,7 @@ public class ECommerceSystem {
             System.out.println("Total Price: " + o.getTotalPrice());
             System.out.println("Total Price: " + o.getStatus());
 
-            // to get the number of items in the order instead of inserting all items
+            // to get the number of items in the order instead of printing all items
             int countItems = 0;
             List<Product> p = o.getOrderProducts();
             if (!p.empty()) {

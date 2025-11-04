@@ -36,7 +36,7 @@ public class Order {
     public void updateStatus(String status) {
         this.status = status;
     }
-    //  setter/getters
+    // setter/getters
 
     public int getOrderId() {
         return orderId;
@@ -74,10 +74,6 @@ public class Order {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public List<Product> getOrderProducts() {
         return orderProducts;
     }
@@ -86,7 +82,6 @@ public class Order {
         this.orderProducts = orderProducts;
     }
 
-    //print method needed
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
