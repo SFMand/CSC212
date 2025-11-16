@@ -44,8 +44,34 @@ public class AVLTree<T> implements Tree<T> {
 
     @Override
     public boolean insert(int key, T e) {
-            // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'insert'");
+        if (empty()) {
+            root = new NodeAVL<T>(key, e);
+            return true;
+        }
+
+        current = root;
+        NodeAVL<T> parent;
+        while (true) {
+            if (current.key == key)
+                return false;
+            parent = current;
+            boolean checkSideLeft = current.key > key;
+            current = checkSideLeft ? current.left : current.right;
+
+            if (current == null) {
+                if (checkSideLeft) {
+                    parent.left = new NodeAVL<T>(key, e);
+                    current = parent.left;
+                } else {
+                    parent.right = new NodeAVL<T>(key, e);
+                    current = parent.right;
+                }
+                break;
+            }
+        }
+        // Rebalance method goes here, not impl yet
+        return true;
+
     }
 
     @Override
@@ -59,8 +85,29 @@ public class AVLTree<T> implements Tree<T> {
 
     @Override
     public boolean removeKey(int key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removeKey'");
+        if (empty())
+            return false;
+
+        current = root;
+
+        while (current != null) {
+            if (current.key == key) {
+                removeNode(current);
+                return true;
+            }
+            current = current.key > key ? current.left : current.right;
+        }
+
+        return false;
+    }
+
+    public void removeNode(NodeAVL<T> n) { // recursive
+        // Case 1: Node is leaf
+        // Rebalance method goes here, not impl yet
+
+        // Case 2: Node has Children
+
+        // Move current correctly
     }
 
     @Override
