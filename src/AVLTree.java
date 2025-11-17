@@ -1,4 +1,3 @@
-
 public class AVLTree<T> implements Tree<T> {
     private NodeAVL<T> root, current;
 
@@ -70,6 +69,7 @@ public class AVLTree<T> implements Tree<T> {
             }
         }
         // Rebalance method goes here, not impl yet
+        balance(parent);
         return true;
 
     }
@@ -107,7 +107,7 @@ public class AVLTree<T> implements Tree<T> {
 
         // Case 2: Node has Children
 
-        // Move current correctly
+        // Move current accordingly
     }
 
     @Override
@@ -147,6 +147,43 @@ public class AVLTree<T> implements Tree<T> {
             postOrder(n.right);
             System.out.println(n.data);
         }
+    }
+
+    private void balance(NodeAVL<T> node) { //recursive
+        calcBalance(node);
+
+        if (node.balanceFactor == -2) {
+            if (heightCheck(node.left.right) - heightCheck(node.left.left) < 0) {
+                // rotate right
+            } else {
+                // double rotate
+            }
+        }
+
+        else if (node.balanceFactor == 2) {
+
+            if (true) {
+                // rotate left
+            } else {
+
+                // double rotate
+            }
+
+        }
+        // call method again for node.parent
+    }
+
+    private void calcBalance(NodeAVL<T>... nodes) {
+        for (NodeAVL<T> node : nodes) {
+            node.height = 1 + Math.max(heightCheck(node.right), heightCheck(node.left));
+            node.balanceFactor = heightCheck(node.right) - heightCheck(node.left);
+        }
+    }
+
+    private int heightCheck(NodeAVL<T> node) {
+        if (node == null)
+            return -1;
+        return node.height;
     }
 
     @Override
