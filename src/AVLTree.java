@@ -1,3 +1,4 @@
+
 public class AVLTree<T> implements Tree<T> {
     private NodeAVL<T> root, current;
 
@@ -149,28 +150,94 @@ public class AVLTree<T> implements Tree<T> {
         }
     }
 
-    private void balance(NodeAVL<T> node) { //recursive
+    private void balance(NodeAVL<T> node) { // recursive
         calcBalance(node);
 
-        if (node.balanceFactor == -2) {
+        if (node.balanceFactor == 2) {
             if (heightCheck(node.left.right) - heightCheck(node.left.left) < 0) {
                 // rotate right
+                rotateRight(node);
             } else {
                 // double rotate
+                doubleRotateRight(node);
             }
         }
 
-        else if (node.balanceFactor == 2) {
+        else if (node.balanceFactor == -2) {
 
-            if (true) {
+            if (heightCheck(node.right.right) - heightCheck(node.right.left) >= 0 ) {
                 // rotate left
+                rotateLeft(node);
             } else {
 
                 // double rotate
+                doubleRotateLeft(node);
             }
 
         }
         // call method again for node.parent
+        if (node.parent != null)
+            balance(node.parent);
+    }
+
+    private NodeAVL<T> rotateRight(NodeAVL<T> node1) {
+        NodeAVL<T> node2 = node1.right;
+        node2.parent = node1.parent;
+        node1.right = node2.left;
+        if (node1.right != null)
+            node1.right.parent = node1;
+
+        node2.left = node1;
+
+        node1.parent = node2;
+
+        if (node2.parent != null) {
+            if (node2.parent.left == node1)
+                node2.parent.left = node2;
+            else
+                node2.parent.right = node2;
+
+        }
+
+        calcBalance(node1, node2);
+        return node2;
+
+    }
+
+    private NodeAVL<T> rotateLeft(NodeAVL<T> node1) {
+        NodeAVL<T> node2 = node1.left;
+        node2.parent = node1.parent;
+
+        node1.left = node2.right;
+        if (node1.left != null)
+            node1.left.parent = node1;
+
+        node2.right = node1;
+        node1.parent = node2;
+
+        if (node2.parent != null) {
+            if (node2.parent.left == node1)
+                node2.parent.left = node2;
+            else
+                node2.parent.right = node2;
+
+        }
+
+        calcBalance(node1, node2);
+        return node2;
+
+    }
+
+    private NodeAVL<T> doubleRotateRight(NodeAVL<T> node1) {
+        node1.right = rotateLeft(node1.right);
+        return rotateRight(node1);
+
+    }
+
+    private NodeAVL<T> doubleRotateLeft(NodeAVL<T> node1) {
+        node1.left = rotateRight(node1.left);
+        return rotateLeft(node1);
+
     }
 
     private void calcBalance(NodeAVL<T>... nodes) {
