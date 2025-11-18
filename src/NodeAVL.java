@@ -1,16 +1,14 @@
 
-public class NodeAVL<T> {
-    public int key, height, balanceFactor;
+public class NodeAVL<K, T> {
+    public int height, balanceFactor;
+    public K key;
     public T data;
-    public NodeAVL<T> right, left, parent;
+    public NodeAVL<K, T> right, left, parent;
 
-    public NodeAVL(int key, T data) {
+    public NodeAVL(K key, T data) {
         this.key = key;
         this.data = data;
-        height = 0;
-        balanceFactor = 0;
-        right = null;
-        left = null;
-        parent = null;
     }
+
+
 }

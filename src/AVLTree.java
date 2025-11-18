@@ -1,6 +1,6 @@
 
-public class AVLTree<T> implements Tree<T> {
-    private NodeAVL<T> root, current;
+public class AVLTree<K, T> implements BSTree<K, T> {
+    private NodeAVL<K, T> root, current;
 
     public AVLTree() {
         current = root = null;
@@ -22,19 +22,22 @@ public class AVLTree<T> implements Tree<T> {
     }
 
     @Override
-    public boolean findKey(int key) {
+    public boolean findKey(K key) {
         if (empty())
             return false;
 
-        NodeAVL<T> p = root, q = null;
+        NodeAVL<K, T> p = root, q = null;
 
         while (p != null) {
             q = p;
-            if (p.key == key) {
+            if (p.key.equals(key)) {
                 current = p;
                 return true;
             }
-            p = p.key > key ? p.left : p.right;
+            if (key instanceof int)
+                p = (int) p.key > (int) key ? p.left : p.right;
+            else if (key instanceof String)
+                p = ((String) p.key).compareTo((String) key) > 0 ? p.left : p.right;
         }
 
         current = q;
@@ -43,66 +46,60 @@ public class AVLTree<T> implements Tree<T> {
     }
 
     @Override
-    public boolean insert(int key, T e) {
+    public boolean insert(K key, T e) {
         if (empty()) {
-            root = new NodeAVL<T>(key, e);
+            root = new NodeAVL<K, T>(key, e);
             return true;
         }
 
-        current = root;
-        NodeAVL<T> parent;
-        while (true) {
-            if (current.key == key)
-                return false;
-            parent = current;
-            boolean checkSideLeft = current.key > key;
-            current = checkSideLeft ? current.left : current.right;
-
-            if (current == null) {
-                if (checkSideLeft) {
-                    parent.left = new NodeAVL<T>(key, e);
-                    current = parent.left;
+        if (!findKey(key)) {
+            if (key instanceof int) {
+                if ((int) current.key > (int) key) {
+                    current.left = new NodeAVL<K, T>(key, e);
+                    current.left.parent = current;
+                    current = current.left;
                 } else {
-                    parent.right = new NodeAVL<T>(key, e);
-                    current = parent.right;
+                    current.right = new NodeAVL<K, T>(key, e);
+                    current.right.parent = current;
+                    current = current.right;
                 }
-                break;
             }
-        }
-        // Rebalance method goes here, not impl yet
-        balance(parent);
-        return true;
-
-    }
-
-    @Override
-    public boolean update(int key, T e) {
-        if (findKey(key)) {
-            current.data = e;
+            if (key instanceof String)
+                if (((String) current.key).compareTo((String) key) > 0) {
+                    current.left = new NodeAVL<K, T>(key, e);
+                    current.left.parent = current;
+                    current = current.left;
+                } else {
+                    current.right = new NodeAVL<K, T>(key, e);
+                    current.right.parent = current;
+                    current = current.right;
+                }
+            balance(current);
             return true;
-        } else
-            return false;
-    }
-
-    @Override
-    public boolean removeKey(int key) {
-        if (empty())
-            return false;
-
-        current = root;
-
-        while (current != null) {
-            if (current.key == key) {
-                removeNode(current);
-                return true;
-            }
-            current = current.key > key ? current.left : current.right;
         }
 
         return false;
     }
 
-    public void removeNode(NodeAVL<T> n) { // recursive
+    @Override
+    public boolean update(K key, T e) {
+        if (findKey(key)) {
+            current.data = e;
+            return true;
+        }
+            return false;
+    }
+
+    @Override
+    public boolean removeKey(K key) {
+        if (findKey(key)) {
+            removeNode(current);
+            return true;
+        }
+            return false;
+    }
+
+    public void removeNode(NodeAVL<K, T> n) { // recursive
         // Case 1: Node is leaf
         // Rebalance method goes here, not impl yet
 
@@ -126,7 +123,7 @@ public class AVLTree<T> implements Tree<T> {
         }
     }
 
-    private void preOrder(NodeAVL<T> n) {
+    private void preOrder(NodeAVL<K, T> n) {
         if (n != null) {
             System.out.println(n.data);
             preOrder(n.left);
@@ -134,7 +131,7 @@ public class AVLTree<T> implements Tree<T> {
         }
     }
 
-    private void inOrder(NodeAVL<T> n) {
+    private void inOrder(NodeAVL<K, T> n) {
         if (n != null) {
             inOrder(n.left);
             System.out.println(n.data);
@@ -142,7 +139,7 @@ public class AVLTree<T> implements Tree<T> {
         }
     }
 
-    private void postOrder(NodeAVL<T> n) {
+    private void postOrder(NodeAVL<K, T> n) {
         if (n != null) {
             postOrder(n.left);
             postOrder(n.right);
@@ -150,11 +147,11 @@ public class AVLTree<T> implements Tree<T> {
         }
     }
 
-    private void balance(NodeAVL<T> node) { // recursive
-        calcBalance(node);
+    private void balance(NodeAVL<K, T> node) { // recursive
+        calcBalance(node, node.left, node.right);
 
         if (node.balanceFactor == 2) {
-            if (heightCheck(node.left.right) - heightCheck(node.left.left) < 0) {
+            if (node.right.balanceFactor >= 0) {
                 // rotate right
                 rotateRight(node);
             } else {
@@ -165,7 +162,7 @@ public class AVLTree<T> implements Tree<T> {
 
         else if (node.balanceFactor == -2) {
 
-            if (heightCheck(node.right.right) - heightCheck(node.right.left) >= 0 ) {
+            if (heightCheck(node.left.right) - heightCheck(node.left.left) < 0) {
                 // rotate left
                 rotateLeft(node);
             } else {
@@ -178,10 +175,12 @@ public class AVLTree<T> implements Tree<T> {
         // call method again for node.parent
         if (node.parent != null)
             balance(node.parent);
+        else
+            root = node;
     }
 
-    private NodeAVL<T> rotateRight(NodeAVL<T> node1) {
-        NodeAVL<T> node2 = node1.right;
+    private NodeAVL<K, T> rotateRight(NodeAVL<K, T> node1) {
+        NodeAVL<K, T> node2 = node1.right;
         node2.parent = node1.parent;
         node1.right = node2.left;
         if (node1.right != null)
@@ -204,8 +203,8 @@ public class AVLTree<T> implements Tree<T> {
 
     }
 
-    private NodeAVL<T> rotateLeft(NodeAVL<T> node1) {
-        NodeAVL<T> node2 = node1.left;
+    private NodeAVL<K, T> rotateLeft(NodeAVL<K, T> node1) {
+        NodeAVL<K, T> node2 = node1.left;
         node2.parent = node1.parent;
 
         node1.left = node2.right;
@@ -228,26 +227,26 @@ public class AVLTree<T> implements Tree<T> {
 
     }
 
-    private NodeAVL<T> doubleRotateRight(NodeAVL<T> node1) {
+    private NodeAVL<K, T> doubleRotateRight(NodeAVL<K, T> node1) {
         node1.right = rotateLeft(node1.right);
         return rotateRight(node1);
 
     }
 
-    private NodeAVL<T> doubleRotateLeft(NodeAVL<T> node1) {
+    private NodeAVL<K, T> doubleRotateLeft(NodeAVL<K, T> node1) {
         node1.left = rotateRight(node1.left);
         return rotateLeft(node1);
 
     }
 
-    private void calcBalance(NodeAVL<T>... nodes) {
-        for (NodeAVL<T> node : nodes) {
+    private void calcBalance(NodeAVL<K, T>... nodes) {
+        for (NodeAVL<K, T> node : nodes) {
             node.height = 1 + Math.max(heightCheck(node.right), heightCheck(node.left));
             node.balanceFactor = heightCheck(node.right) - heightCheck(node.left);
         }
     }
 
-    private int heightCheck(NodeAVL<T> node) {
+    private int heightCheck(NodeAVL<K, T> node) {
         if (node == null)
             return -1;
         return node.height;
