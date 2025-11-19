@@ -16,5 +16,5 @@ public interface BSTree<K, T> {
 
     public void traverse(TraverseOrder t);
 
-    public boolean deleteSub();
+    public void deleteSub();
 }

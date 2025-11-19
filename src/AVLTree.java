@@ -1,5 +1,5 @@
 
-public class AVLTree<K, T> implements BSTree<K, T> {
+public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
     private NodeAVL<K, T> root, current;
 
     public AVLTree() {
@@ -30,14 +30,12 @@ public class AVLTree<K, T> implements BSTree<K, T> {
 
         while (p != null) {
             q = p;
-            if (p.key.equals(key)) {
+            if (key.equals(p.key)) {
                 current = p;
                 return true;
             }
-            if (key instanceof int)
-                p = (int) p.key > (int) key ? p.left : p.right;
-            else if (key instanceof String)
-                p = ((String) p.key).compareTo((String) key) > 0 ? p.left : p.right;
+                p = key.compareTo(p.key) < 0  ? p.left : p.right;
+          
         }
 
         current = q;
@@ -53,19 +51,7 @@ public class AVLTree<K, T> implements BSTree<K, T> {
         }
 
         if (!findKey(key)) {
-            if (key instanceof int) {
-                if ((int) current.key > (int) key) {
-                    current.left = new NodeAVL<K, T>(key, e);
-                    current.left.parent = current;
-                    current = current.left;
-                } else {
-                    current.right = new NodeAVL<K, T>(key, e);
-                    current.right.parent = current;
-                    current = current.right;
-                }
-            }
-            if (key instanceof String)
-                if (((String) current.key).compareTo((String) key) > 0) {
+                if (key.compareTo(current.key) < 0) {
                     current.left = new NodeAVL<K, T>(key, e);
                     current.left.parent = current;
                     current = current.left;
@@ -83,29 +69,59 @@ public class AVLTree<K, T> implements BSTree<K, T> {
 
     @Override
     public boolean update(K key, T e) {
-        if (findKey(key)) {
-            current.data = e;
-            return true;
-        }
-            return false;
+        return removeKey(current.key) && insert(key, e);
     }
 
     @Override
     public boolean removeKey(K key) {
         if (findKey(key)) {
             removeNode(current);
+            if (current == null)
+                current = root;
             return true;
         }
-            return false;
+        return false;
     }
 
-    public void removeNode(NodeAVL<K, T> n) { // recursive
+    public void removeNode(NodeAVL<K, T> node) { // recursive
         // Case 1: Node is leaf
-        // Rebalance method goes here, not impl yet
+        if (node.left == null && node.right == null) {
+            NodeAVL<K, T> parent = node.parent;
+            if (parent != null) {
+                if (parent.left == node)
+                    parent.left = null;
+                else
+                    parent.right = null;
+               
+                balance(parent);
+            } else {
+                root = null;
+            }
+
+        }
 
         // Case 2: Node has Children
+        NodeAVL<K, T> child;
+        if (node.right != null)
+            child = minInTree(node.right);
+        else
+            child = maxInTree(node.left);
 
-        // Move current accordingly
+        node.key = child.key;
+        node.data = child.data;
+        removeNode(child);
+    }
+
+    private NodeAVL<K, T> minInTree(NodeAVL<K, T> node) {
+        while (node.left != null)
+            node = node.left;
+        return node;
+    }
+
+    private NodeAVL<K, T> maxInTree(NodeAVL<K, T> node) {
+        while (node.right != null)
+            node = node.right;
+        return node;
     }
 
     @Override
@@ -148,12 +164,12 @@ public class AVLTree<K, T> implements BSTree<K, T> {
     }
 
     private void balance(NodeAVL<K, T> node) { // recursive
-        calcBalance(node, node.left, node.right);
+        calcBalance(node.right, node.left, node);
 
         if (node.balanceFactor == 2) {
             if (node.right.balanceFactor >= 0) {
                 // rotate right
-                rotateRight(node);
+                rightRotation(node);
             } else {
                 // double rotate
                 doubleRotateRight(node);
@@ -162,9 +178,9 @@ public class AVLTree<K, T> implements BSTree<K, T> {
 
         else if (node.balanceFactor == -2) {
 
-            if (heightCheck(node.left.right) - heightCheck(node.left.left) < 0) {
+            if (node.left.balanceFactor < 0) {
                 // rotate left
-                rotateLeft(node);
+                leftRotation(node);
             } else {
 
                 // double rotate
@@ -179,7 +195,7 @@ public class AVLTree<K, T> implements BSTree<K, T> {
             root = node;
     }
 
-    private NodeAVL<K, T> rotateRight(NodeAVL<K, T> node1) {
+    private NodeAVL<K, T> rightRotation(NodeAVL<K, T> node1) {
         NodeAVL<K, T> node2 = node1.right;
         node2.parent = node1.parent;
         node1.right = node2.left;
@@ -203,7 +219,7 @@ public class AVLTree<K, T> implements BSTree<K, T> {
 
     }
 
-    private NodeAVL<K, T> rotateLeft(NodeAVL<K, T> node1) {
+    private NodeAVL<K, T> leftRotation(NodeAVL<K, T> node1) {
         NodeAVL<K, T> node2 = node1.left;
         node2.parent = node1.parent;
 
@@ -227,15 +243,15 @@ public class AVLTree<K, T> implements BSTree<K, T> {
 
     }
 
-    private NodeAVL<K, T> doubleRotateRight(NodeAVL<K, T> node1) {
-        node1.right = rotateLeft(node1.right);
-        return rotateRight(node1);
+    private void doubleRotateRight(NodeAVL<K, T> node1) {
+        node1.right = leftRotation(node1.right);
+        rightRotation(node1);
 
     }
 
-    private NodeAVL<K, T> doubleRotateLeft(NodeAVL<K, T> node1) {
-        node1.left = rotateRight(node1.left);
-        return rotateLeft(node1);
+    private void doubleRotateLeft(NodeAVL<K, T> node1) {
+        node1.left = rightRotation(node1.left);
+        leftRotation(node1);
 
     }
 
@@ -253,9 +269,17 @@ public class AVLTree<K, T> implements BSTree<K, T> {
     }
 
     @Override
-    public boolean deleteSub() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteSub'");
+    public void deleteSub() {
+        if (current == root){
+            current = root = null;
+            return;
+        }NodeAVL<K, T> parent = current.parent;
+        if(parent.left == current)
+            parent.left = null;
+        else
+            parent.right = null;
+        balance(parent);
+        current = root; 
     }
 
 }
