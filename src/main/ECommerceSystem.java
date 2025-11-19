@@ -3,14 +3,16 @@ package main;
 import java.io.*;
 import java.time.*;
 
+import DAL.CustomerOperations;
 import models.*;
 import structures.*;
+import structures.TraverseOrder;
 
 public class ECommerceSystem {
 
     private List<Product> allProducts;
-    private List<Customer> allCustomers;
     private List<Order> allOrders;
+    private CustomerOperations co;
 
     private static final String PRODUCTS_FILE = "assets/prodcuts.csv";
     private static final String CUSTOMERS_FILE = "assets/customers.csv";
@@ -18,9 +20,9 @@ public class ECommerceSystem {
     private static final String REVIEWS_FILE = "assets/reviews.csv";
 
     public ECommerceSystem() {
-        this.allProducts = new LinkedList<>();
-        this.allCustomers = new LinkedList<>();
-        this.allOrders = new LinkedList<>();
+        allProducts = new LinkedList<>();
+        co = new CustomerOperations();
+        allOrders = new LinkedList<>();
     }
 
     public void loadFiles() {
@@ -32,7 +34,8 @@ public class ECommerceSystem {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] row = line.split(",");
-                Product p = new Product(Integer.parseInt(row[0]), row[1], Double.parseDouble(row[2]), Integer.parseInt(row[3]));
+                Product p = new Product(Integer.parseInt(row[0]), row[1], Double.parseDouble(row[2]),
+                        Integer.parseInt(row[3]));
                 allProducts.insert(p);
             }
         } catch (IOException | NumberFormatException e) {
@@ -47,7 +50,7 @@ public class ECommerceSystem {
             while ((line = reader.readLine()) != null) {
                 String[] row = line.split(",");
                 Customer c = new Customer(Integer.parseInt(row[0]), row[1], row[2]);
-                allCustomers.insert(c);
+                co.insertCustomer(c);
             }
         } catch (IOException | NumberFormatException e) {
             System.err.println(e.getMessage());
@@ -59,12 +62,13 @@ public class ECommerceSystem {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] row = line.split(",");
-                Order o = new Order(Integer.parseInt(row[0]), Integer.parseInt(row[1]), Double.parseDouble(row[3]), LocalDate.parse(row[4]), row[5]);
+                Order o = new Order(Integer.parseInt(row[0]), Integer.parseInt(row[1]), Double.parseDouble(row[3]),
+                        LocalDate.parse(row[4]), row[5]);
                 String[] productString = row[2].replace('"', ' ').trim().split(";");
                 for (String index : productString) {
                     o.getOrderProducts().insert(searchProductId(Integer.parseInt(index)));
                 }
-                searchCustomerId(Integer.parseInt(row[1])).getOrderHistory().insert(o);
+                searchCustomerId(Integer.parseInt(row[1])).getOrderHistory().insert(o.getOrderId(), o);
                 allOrders.insert(o);
             }
         } catch (IOException | NumberFormatException e) {
@@ -77,7 +81,8 @@ public class ECommerceSystem {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] row = line.split(",");
-                Review r = new Review(Integer.parseInt(row[0]), Integer.parseInt(row[2]), Integer.parseInt(row[3]), (row.length > 5 ? row[4] + "," + row[5] : row[4]));
+                Review r = new Review(Integer.parseInt(row[0]), Integer.parseInt(row[2]), Integer.parseInt(row[3]),
+                        (row.length > 5 ? row[4] + "," + row[5] : row[4]));
                 searchProductId(Integer.parseInt(row[1])).getReviews().insert(r);
             }
         } catch (IOException | NumberFormatException e) {
@@ -106,7 +111,7 @@ public class ECommerceSystem {
         return false;
     }
 
-    public boolean updateProduct(int id, String name, double price, int stock) { //needs overwrite line in csv
+    public boolean updateProduct(int id, String name, double price, int stock) { // needs overwrite line in csv
         Product p = searchProductId(id);
         if (p != null) {
             p.setName(name);
@@ -158,67 +163,63 @@ public class ECommerceSystem {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(REVIEWS_FILE, true));
             writer.newLine();
-            writer.write(r.getReviewId() + "," + p.getProductId() + "," + r.getCustomerId() + "," + r.getRating() + "," + "\"" + r.getComment() + "\"");
+            writer.write(r.getReviewId() + "," + p.getProductId() + "," + r.getCustomerId() + "," + r.getRating() + ","
+                    + "\"" + r.getComment() + "\"");
             writer.close();
             p.getReviews().insert(r);
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
     }
+    /*
+     * not needed in phase 2
+     * public List<Product> trackOutOfStockProducts() {
+     * List<Product> tosp = new LinkedList<>();
+     * if (!allProducts.empty()) {
+     * allProducts.findFirst();
+     * 
+     * while (true) {
+     * if (allProducts.retrieve().getStock() == 0) {
+     * tosp.insert(allProducts.retrieve());
+     * }
+     * if (allProducts.last()) {
+     * break;
+     * }
+     * allProducts.findNext();
+     * }
+     * 
+     * }
+     * return tosp;
+     * }
+     */
 
-    public List<Product> trackOutOfStockProducts() {
-        List<Product> tosp = new LinkedList<>();
-        if (!allProducts.empty()) {
-            allProducts.findFirst();
-
-            while (true) {
-                if (allProducts.retrieve().getStock() == 0) {
-                    tosp.insert(allProducts.retrieve());
-                }
-                if (allProducts.last()) {
-                    break;
-                }
-                allProducts.findNext();
-            }
-
-        }
-        return tosp;
-    }
-
-    public void registerCustomer(Customer c) {
-        //write to csv file
+    public boolean registerCustomer(Customer c) {
+        // write to csv file
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(CUSTOMERS_FILE, true));
-            writer.newLine();
-            writer.write(c.getCustomerId() + "," + c.getName() + "," + c.getEmail());
-            writer.close();
-            allCustomers.insert(c);
+            if (co.insertCustomer(c)) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(CUSTOMERS_FILE, true));
+                writer.newLine();
+                writer.write(c.getCustomerId() + "," + c.getName() + "," + c.getEmail());
+                writer.close();
+                return true;
+            } else
+                return false;
         } catch (IOException e) {
             System.err.println(e.getMessage());
+            return false;
         }
     }
 
-    public Customer searchCustomerId(int customerId) {
-        Customer c = null;
-        if (!allCustomers.empty()) {
-            allCustomers.findFirst();
+    public Customer searchCustomerName(String name) {
+        return co.searchCustomerName(name);
+    }
 
-            while (true) {
-                if (allCustomers.retrieve().getCustomerId() == customerId) {
-                    c = allCustomers.retrieve();
-                }
-                if (allCustomers.last()) {
-                    break;
-                }
-                allCustomers.findNext();
-            }
-        }
-        return c;
-
+    public Customer searchCustomerId(int id) {
+        return co.searchCustomerId(id);
     }
 
     public void addOrder(Order o) {
-        //write to csv file
+        // write to csv file
         StringBuilder orderPID = new StringBuilder();
         orderPID.append('"');
         if (!o.getOrderProducts().empty()) {
@@ -238,7 +239,8 @@ public class ECommerceSystem {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(ORDERS_FILE, true));
             writer.newLine();
-            writer.write(o.getOrderId() + "," + o.getCustomerId() + "," + orderPID.toString() + "," + o.getTotalPrice() + "," + o.getOrderDate() + "," + o.getStatus());
+            writer.write(o.getOrderId() + "," + o.getCustomerId() + "," + orderPID.toString() + "," + o.getTotalPrice()
+                    + "," + o.getOrderDate() + "," + o.getStatus());
             writer.close();
             allOrders.insert(o);
         } catch (IOException e) {
@@ -263,7 +265,7 @@ public class ECommerceSystem {
             }
         }
         order.setTotalPrice(totalPrice);
-        c.getOrderHistory().insert(order);
+        c.getOrderHistory().insert(order.getOrderId(), order);
         addOrder(order);
         return order;
     }
@@ -304,20 +306,20 @@ public class ECommerceSystem {
                         }
                         reviews.findNext();
                     }
-                    
+
                 }
 
                 if (allProducts.last()) {
-                        break;
-                    }
-                    allProducts.findNext();
+                    break;
+                }
+                allProducts.findNext();
             }
         }
         return r;
     }
 
     public List<Product> getTopRatedProducts() {
-        //get 3 top rated products by average rating and return list
+        // get 3 top rated products by average rating and return list
         List<Product> top = new LinkedList<>();
         if (allProducts.empty()) {
             return top;
@@ -360,7 +362,7 @@ public class ECommerceSystem {
     }
 
     public List<Order> getOrdersBetweenDates(LocalDate startDate, LocalDate endDate) {
-        //get orders between two dates and return list
+        // get orders between two dates and return list
         List<Order> result = new LinkedList<>();
         if (!allOrders.empty()) {
             Order o;
@@ -380,75 +382,78 @@ public class ECommerceSystem {
         }
         return result;
     }
-
-    public List<Review> getCustomerReviews(Customer c) {
-        List<Review> reviewsByC = new LinkedList<>();
-        if (!allProducts.empty()) {
-            allProducts.findFirst();
-            while (true) {
-                List<Review> reviews = allProducts.retrieve().getReviews();
-                if (!reviews.empty()) {
-                    reviews.findFirst();
-                    while (true) {
-                        if (reviews.retrieve().getCustomerId() == c.getCustomerId()) {
-                            reviewsByC.insert(reviews.retrieve());
-                        }
-
-                        reviews.findNext();
-                        if (reviews.last()) {
-                            break;
-                        }
-                    }
-                }
-                if (allProducts.last()) {
-                    break;
-                }
-                allProducts.findNext();
-
-            }
-        }
-        return reviewsByC;
-
-    }
-
-    public List<Product> findCommonProducts(int customerId1, int customerId2) {
-        //find common products reviewed by two customers with product's average rating above 4.0(4.1, 4.2...5) and return list
-        List<Product> result = new LinkedList<>();
-        if (!allProducts.empty()) {
-            allProducts.findFirst();
-            while (true) {
-                Product p = allProducts.retrieve();
-                boolean reviewedBy1 = false;
-                boolean reviewedBy2 = false;
-                List<Review> revs = p.getReviews();
-                if (!revs.empty()) {
-                    revs.findFirst();
-                    while (true) {
-                        Review r = revs.retrieve();
-                        if (r.getCustomerId() == customerId1) {
-                            reviewedBy1 = true;
-                        }
-                        if (r.getCustomerId() == customerId2) {
-                            reviewedBy2 = true;
-                        }
-                        if (revs.last()) {
-                            break;
-                        }
-                        revs.findNext();
-                    }
-                }
-
-                if (reviewedBy1 && reviewedBy2 && p.averageRating() > 4.0) {
-                    result.insert(p);
-                }
-                if (allProducts.last()) {
-                    break;
-                }
-                allProducts.findNext();
-            }
-        }
-        return result;
-    }
+    /*
+     * not needed in phase 2
+     * public List<Review> getCustomerReviews(Customer c) {
+     * List<Review> reviewsByC = new LinkedList<>();
+     * if (!allProducts.empty()) {
+     * allProducts.findFirst();
+     * while (true) {
+     * List<Review> reviews = allProducts.retrieve().getReviews();
+     * if (!reviews.empty()) {
+     * reviews.findFirst();
+     * while (true) {
+     * if (reviews.retrieve().getCustomerId() == c.getCustomerId()) {
+     * reviewsByC.insert(reviews.retrieve());
+     * }
+     * 
+     * reviews.findNext();
+     * if (reviews.last()) {
+     * break;
+     * }
+     * }
+     * }
+     * if (allProducts.last()) {
+     * break;
+     * }
+     * allProducts.findNext();
+     * 
+     * }
+     * }
+     * return reviewsByC;
+     * 
+     * }
+     */
+    /*
+     * not needed in phase 2
+     * public List<Product> findCommonProducts(int customerId1, int customerId2) {
+     * List<Product> result = new LinkedList<>();
+     * if (!allProducts.empty()) {
+     * allProducts.findFirst();
+     * while (true) {
+     * Product p = allProducts.retrieve();
+     * boolean reviewedBy1 = false;
+     * boolean reviewedBy2 = false;
+     * List<Review> revs = p.getReviews();
+     * if (!revs.empty()) {
+     * revs.findFirst();
+     * while (true) {
+     * Review r = revs.retrieve();
+     * if (r.getCustomerId() == customerId1) {
+     * reviewedBy1 = true;
+     * }
+     * if (r.getCustomerId() == customerId2) {
+     * reviewedBy2 = true;
+     * }
+     * if (revs.last()) {
+     * break;
+     * }
+     * revs.findNext();
+     * }
+     * }
+     * 
+     * if (reviewedBy1 && reviewedBy2 && p.averageRating() > 4.0) {
+     * result.insert(p);
+     * }
+     * if (allProducts.last()) {
+     * break;
+     * }
+     * allProducts.findNext();
+     * }
+     * }
+     * return result;
+     * }
+     */
 
     public void printAllProducts() {
         System.out.println("=== PRODUCTS ===");
@@ -476,25 +481,7 @@ public class ECommerceSystem {
 
     public void printAllCustomers() {
         System.out.println("=== CUSTOMERS ===");
-        if (allCustomers.empty()) {
-            System.out.println("No customers found");
-            return;
-        }
-
-        allCustomers.findFirst();
-        while (true) {
-            Customer c = allCustomers.retrieve();
-            System.out.println("Customer ID: " + c.getCustomerId());
-            System.out.println("Name: " + c.getName());
-            System.out.println("Email: " + c.getEmail());
-            System.out.println("-------------------------");
-
-            if (allCustomers.last()) {
-                break;
-            }
-            allCustomers.findNext();
-        }
-
+        co.printSortedName(TraverseOrder.PRE_ORDER);
     }
 
     public void printAllOrders() {

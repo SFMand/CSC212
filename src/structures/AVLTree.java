@@ -1,6 +1,6 @@
 package structures;
 
-public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
+public class AVLTree<K extends Comparable<K>, T> implements BinaryTree<K, T> {
     private NodeAVL<K, T> root, current;
 
     public AVLTree() {
@@ -165,7 +165,7 @@ public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
     }
 
     private void balance(NodeAVL<K, T> node) { // recursive
-        calcBalance(node.right, node.left, node);
+        calcBalance(node);
 
         if (node.balanceFactor == 2) {
             if (node.right.balanceFactor >= 0) {

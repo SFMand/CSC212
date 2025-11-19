@@ -1,5 +1,5 @@
 package structures;
-public interface BSTree<K, T> {
+public interface BinaryTree<K, T> {
 
     public boolean full();
 
