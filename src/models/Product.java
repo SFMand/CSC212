@@ -1,4 +1,5 @@
-
+package models;
+import structures.*;
 
 public class Product {
 

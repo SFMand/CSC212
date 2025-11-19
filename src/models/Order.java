@@ -1,5 +1,8 @@
+package models;
 
 import java.time.*;
+
+import structures.*;
 
 public class Order {
 

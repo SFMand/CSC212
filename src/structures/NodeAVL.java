@@ -1,3 +1,4 @@
+package structures;
 
 public class NodeAVL<K, T> {
     public int height, balanceFactor;

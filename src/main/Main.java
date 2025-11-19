@@ -1,3 +1,5 @@
+package main;
+import gui.WelcomeFrame;
 
 public class Main {
 

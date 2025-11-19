@@ -1,6 +1,10 @@
+package main;
 
 import java.io.*;
 import java.time.*;
+
+import models.*;
+import structures.*;
 
 public class ECommerceSystem {
 

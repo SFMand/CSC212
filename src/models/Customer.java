@@ -1,3 +1,5 @@
+package models;
+import structures.*;
 
 public class Customer {
 
