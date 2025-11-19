@@ -1,5 +1,12 @@
+package gui;
 
 import javax.swing.*;
+
+import main.*;
+import models.*;
+import structures.*;
+import structures.List;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;

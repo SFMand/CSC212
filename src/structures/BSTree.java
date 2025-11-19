@@ -1,3 +1,4 @@
+package structures;
 public interface BSTree<K, T> {
 
     public boolean full();

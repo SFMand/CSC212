@@ -1,3 +1,4 @@
+package structures;
 
 public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
     private NodeAVL<K, T> root, current;
