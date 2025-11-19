@@ -481,7 +481,7 @@ public class ECommerceSystem {
 
     public void printAllCustomers() {
         System.out.println("=== CUSTOMERS ===");
-        co.printSortedName(TraverseOrder.PRE_ORDER);
+        co.printSortedName(TraverseOrder.IN_ORDER);
     }
 
     public void printAllOrders() {
