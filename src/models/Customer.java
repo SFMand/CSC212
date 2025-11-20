@@ -7,23 +7,23 @@ public class Customer {
     private static int countId = 231;
     private String name;
     private String email;
-    private BinaryTree<Integer, Order> orders;
+    private List<Order> orders;
 
     public Customer(String name, String email) {
         this.customerId = countId++;
         this.name = name;
         this.email = email;
-        orders = new AVLTree<>();
+        orders = new LinkedList<>();
     }
 
     public Customer(int customerId, String name, String email) {
         this.customerId = customerId;
         this.name = name;
         this.email = email;
-        orders = new AVLTree<>();
+        orders = new LinkedList<>();
     }
 
-    public BinaryTree<Integer, Order> getOrderHistory() {
+    public List<Order> getOrderHistory() {
         return orders;
     }
 
@@ -52,7 +52,7 @@ public class Customer {
         this.email = email;
     }
 
-    public void setOrders(BinaryTree<Integer, Order> orders) {
+    public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
     //print method needed
