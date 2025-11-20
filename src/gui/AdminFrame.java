@@ -31,7 +31,7 @@ public class AdminFrame extends JFrame {
         buttonPanel.setLayout(new GridLayout(0, 1, 1, 1));
 
         JButton listProducts = new JButton("List All Products");
-        JButton listCustomers = new JButton("List All Customers");
+        JButton listCustomers = new JButton("List All Customers, Sorted Alphabetically");
         JButton listOrders = new JButton("List All Orders");
         JButton addProduct = new JButton("Add Product");
         JButton findProduct = new JButton("Find Product by ID");
@@ -238,7 +238,7 @@ public class AdminFrame extends JFrame {
                     int id = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this, "Enter Product Id",
                             "Find Customers", JOptionPane.QUESTION_MESSAGE));
                     System.out.println("--- Searching for Customer who reviewed Product ID: " + id + " ---");
-                    eCSystem.productReviewers(id).print();
+                    eCSystem.productReviewers(id).traverse(TraverseOrder.IN_ORDER);
 
                 } catch (NumberFormatException ex) {
                     System.out.println("Invalid Input: " + ex.getMessage());

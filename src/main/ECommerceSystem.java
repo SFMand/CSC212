@@ -3,14 +3,13 @@ package main;
 import java.io.*;
 import java.time.*;
 
-import DAL.CustomerOperations;
-import DAL.ProductOperations;
+import DAL.*;
 import models.*;
 import structures.*;
 
 public class ECommerceSystem {
 
-    private List<Order> allOrders;
+    private OrderOperations op;
     private CustomerOperations co;
     private ProductOperations po;
 
@@ -22,7 +21,7 @@ public class ECommerceSystem {
     public ECommerceSystem() {
         po = new ProductOperations();
         co = new CustomerOperations();
-        allOrders = new LinkedList<>();
+        op = new OrderOperations();
     }
 
     public void loadFiles() {
@@ -70,7 +69,7 @@ public class ECommerceSystem {
                     o.getOrderProducts().insert(searchProductId(Integer.parseInt(index)));
                 }
                 searchCustomerId(Integer.parseInt(row[1])).getOrderHistory().insert(o);
-                allOrders.insert(o);
+                op.addOrder(o);
             }
         } catch (IOException | NumberFormatException e) {
             System.err.println(e.getMessage());
@@ -108,7 +107,7 @@ public class ECommerceSystem {
     }
 
     public boolean removeProduct(int productId) {
-       return po.removeProduct(productId);
+        return po.removeProduct(productId);
     }
 
     public boolean updateProduct(int id, String name, double price, int stock) { // needs overwrite line in csv
@@ -160,15 +159,16 @@ public class ECommerceSystem {
         }
     }
 
-    public List<Customer> productReviewers(int id) {
-        List<Customer> customers = new LinkedList<>();
+    public BinaryTree<Integer, Customer> productReviewers(int id) {
+        BinaryTree<Integer, Customer> customers = new AVLTree<>();
         Product p = po.searchProductId(id);
         if (p != null) {
             List<Review> reviewsOfProduct = p.getReviews();
             if (!reviewsOfProduct.empty()) {
                 reviewsOfProduct.findFirst();
                 while (true) {
-                    customers.insert(co.searchCustomerId(reviewsOfProduct.retrieve().getCustomerId()));
+                    int customerId = reviewsOfProduct.retrieve().getCustomerId();
+                    customers.insert(customerId, searchCustomerId(customerId));
                     if (reviewsOfProduct.last())
                         break;
                     reviewsOfProduct.findNext();
@@ -228,29 +228,31 @@ public class ECommerceSystem {
 
     public void addOrder(Order o) {
         // write to csv file
-        StringBuilder orderPID = new StringBuilder();
-        orderPID.append('"');
-        if (!o.getOrderProducts().empty()) {
-            o.getOrderProducts().findFirst();
-            while (true) {
-                if (orderPID.length() > 1) {
-                    orderPID.append(';');
-                }
-                orderPID.append(o.getOrderProducts().retrieve().getProductId());
-                if (o.getOrderProducts().last()) {
-                    break;
-                }
-                o.getOrderProducts().findNext();
-            }
-            orderPID.append('"');
-        }
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(ORDERS_FILE, true));
-            writer.newLine();
-            writer.write(o.getOrderId() + "," + o.getCustomerId() + "," + orderPID.toString() + "," + o.getTotalPrice()
-                    + "," + o.getOrderDate() + "," + o.getStatus());
-            writer.close();
-            allOrders.insert(o);
+            if (op.addOrder(o)) {
+                StringBuilder orderPID = new StringBuilder();
+                orderPID.append('"');
+                if (!o.getOrderProducts().empty()) {
+                    o.getOrderProducts().findFirst();
+                    while (true) {
+                        if (orderPID.length() > 1) {
+                            orderPID.append(';');
+                        }
+                        orderPID.append(o.getOrderProducts().retrieve().getProductId());
+                        if (o.getOrderProducts().last()) {
+                            break;
+                        }
+                        o.getOrderProducts().findNext();
+                    }
+                    orderPID.append('"');
+                }
+                BufferedWriter writer = new BufferedWriter(new FileWriter(ORDERS_FILE, true));
+                writer.newLine();
+                writer.write(
+                        o.getOrderId() + "," + o.getCustomerId() + "," + orderPID.toString() + "," + o.getTotalPrice()
+                                + "," + o.getOrderDate() + "," + o.getStatus());
+                writer.close();
+            }
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
@@ -279,20 +281,7 @@ public class ECommerceSystem {
     }
 
     public Order searchOrderId(int orderId) {
-        Order o = null;
-        if (!allOrders.empty()) {
-            allOrders.findFirst();
-            while (true) {
-                if (allOrders.retrieve().getOrderId() == orderId) {
-                    o = allOrders.retrieve();
-                }
-                if (allOrders.last()) {
-                    break;
-                }
-                allOrders.findNext();
-            }
-        }
-        return o;
+        return op.searchOrderById(orderId);
     }
 
     /*
@@ -374,26 +363,9 @@ public class ECommerceSystem {
     }
 
     public List<Order> getOrdersBetweenDates(LocalDate startDate, LocalDate endDate) {
-        // get orders between two dates and return list
-        List<Order> result = new LinkedList<>();
-        if (!allOrders.empty()) {
-            Order o;
-            allOrders.findFirst();
-            while (true) {
-                o = allOrders.retrieve();
-                LocalDate date = o.getOrderDate();
-                if (date.isAfter(startDate) && date.isBefore(endDate)) {
-                    result.insert(o);
-                }
-                allOrders.findNext();
-                if (allOrders.last()) {
-                    break;
-                }
-            }
-
-        }
-        return result;
+        return op.getOrdersBetweenDates(startDate, endDate);
     }
+
     /*
      * not needed in phase 2
      * public List<Review> getCustomerReviews(Customer c) {
@@ -480,39 +452,7 @@ public class ECommerceSystem {
 
     public void printAllOrders() {
         System.out.println("=== ORDERS ===");
-        if (allOrders.empty()) {
-            System.out.println("No orders found");
-            return;
-        }
-
-        allOrders.findFirst();
-        while (true) {
-            Order o = allOrders.retrieve();
-            System.out.println("Order ID: " + o.getOrderId());
-            System.out.println("Customer ID: " + o.getCustomerId());
-            System.out.println("Order Date: " + o.getOrderDate());
-            System.out.println("Total Price: " + o.getTotalPrice());
-            System.out.println("Total Price: " + o.getStatus());
-
-            // to get the number of items in the order instead of printing all items
-            int countItems = 0;
-            List<Product> p = o.getOrderProducts();
-            if (!p.empty()) {
-                p.findFirst();
-                countItems = 1;
-                while (!p.last()) {
-                    countItems++;
-                    p.findNext();
-                }
-            }
-            System.out.println("Number of Items: " + countItems);
-            System.out.println("-------------------------");
-
-            if (allOrders.last()) {
-                break;
-            }
-            allOrders.findNext();
-        }
+        op.printSortedId(TraverseOrder.IN_ORDER);
 
     }
 
