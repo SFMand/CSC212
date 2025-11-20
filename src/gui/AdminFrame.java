@@ -255,7 +255,7 @@ public class AdminFrame extends JFrame {
                 try {
                     Double min = Double.parseDouble(JOptionPane.showInputDialog(AdminFrame.this, "Enter minimum price",
                             "Price Range Query", JOptionPane.QUESTION_MESSAGE));
-                    Double max = Double.parseDouble(JOptionPane.showInputDialog(AdminFrame.this, "Enter minimum price",
+                    Double max = Double.parseDouble(JOptionPane.showInputDialog(AdminFrame.this, "Enter maximum price",
                             "Price Range Query", JOptionPane.QUESTION_MESSAGE));
                     if (min <= max) {
                         System.out.printf("--- Products Within: [%.2f - %.2f] ---\n", min, max);

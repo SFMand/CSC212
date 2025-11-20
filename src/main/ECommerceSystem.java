@@ -108,12 +108,7 @@ public class ECommerceSystem {
     }
 
     public boolean removeProduct(int productId) {
-        Product p = searchProductId(productId);
-        if (p != null) {
-            p.setStock(0);
-            return true;
-        }
-        return false;
+       return po.removeProduct(productId);
     }
 
     public boolean updateProduct(int id, String name, double price, int stock) { // needs overwrite line in csv

@@ -95,8 +95,9 @@ public class ProductOperations {
         }
     }
 
-    public boolean removeProduct(Product p) {
-        if (productById.removeKey(p.getProductId())) {
+    public boolean removeProduct(int id) {
+        Product  p = searchProductId(id);
+        if (productById.removeKey(id)) {
             productByPrice.findKey(p.getPrice());
             removeFromDuplicates(p, productByPrice.retrieve());
 
@@ -186,7 +187,7 @@ public class ProductOperations {
                     break;
                 products.findNext();
             }
-            
+
             if (productByPrice.findLeft()) {
                 findPriceRange(minPrice, maxPrice, result);
                 productByPrice.findParent();
