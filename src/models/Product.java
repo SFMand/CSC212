@@ -1,4 +1,5 @@
 package models;
+
 import structures.*;
 
 public class Product {
@@ -8,6 +9,8 @@ public class Product {
     private String name;
     private double price;
     private int stock;
+    private double averageRating;
+    private int reviewCount;
     private List<Review> reviews;
 
     public Product(String name, double price, int stock) {
@@ -26,27 +29,16 @@ public class Product {
         this.reviews = new LinkedList<>();
     }
 
+    public void addReview(Review r) {
+        reviews.insert(r);
+        double score = averageRating * reviewCount;
+        score += r.getRating();
+        reviewCount++;
+        averageRating = score / reviewCount;
 
-    public double averageRating() {
-        double avg = 0;
-        if (!reviews.empty()) {
-            int count = 0;
-            double sum = 0;
-            reviews.findFirst();
-            while (!reviews.last()) {
-                count++;
-                sum += reviews.retrieve().getRating();
-                reviews.findNext();
-            }
-            count++;
-            sum += reviews.retrieve().getRating();
-            avg = sum / count;
-        }
-        return avg;
     }
 
-
-    //  setter/getters
+    // setter/getters
     public int getProductId() {
         return productId;
     }
@@ -87,7 +79,11 @@ public class Product {
         this.reviews = reviews;
     }
 
-    //Print method needed
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    // Print method needed
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -95,7 +91,7 @@ public class Product {
         sb.append("\nName: ").append(name);
         sb.append("\nPrice: ").append(price);
         sb.append("\nStock: ").append(stock);
-        sb.append("\nAverage Rating: ").append(averageRating());
+        sb.append("\nAverage Rating: ").append(getAverageRating());
         return sb.toString();
     }
 

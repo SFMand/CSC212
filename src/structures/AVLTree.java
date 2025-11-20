@@ -1,6 +1,6 @@
 package structures;
 
-public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
+public class AVLTree<K extends Comparable<K>, T> implements BinaryTree<K, T> {
     private NodeAVL<K, T> root, current;
 
     public AVLTree() {
@@ -22,6 +22,38 @@ public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
         return current.data;
     }
 
+    public K getKey() {
+        return current.key;
+    }
+
+    public void findRoot() {
+        current = root;
+    }
+
+    public boolean findRight() {
+        if (!empty() && current.right != null) {
+            current = current.right;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean findLeft() {
+        if (!empty() && current.left != null) {
+            current = current.left;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean findParent() {
+        if (!empty() && current.parent != null) {
+            current = current.parent;
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean findKey(K key) {
         if (empty())
@@ -35,8 +67,8 @@ public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
                 current = p;
                 return true;
             }
-                p = key.compareTo(p.key) < 0  ? p.left : p.right;
-          
+            p = key.compareTo(p.key) < 0 ? p.left : p.right;
+
         }
 
         current = q;
@@ -48,19 +80,20 @@ public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
     public boolean insert(K key, T e) {
         if (empty()) {
             root = new NodeAVL<K, T>(key, e);
+            current = root;
             return true;
         }
 
         if (!findKey(key)) {
-                if (key.compareTo(current.key) < 0) {
-                    current.left = new NodeAVL<K, T>(key, e);
-                    current.left.parent = current;
-                    current = current.left;
-                } else {
-                    current.right = new NodeAVL<K, T>(key, e);
-                    current.right.parent = current;
-                    current = current.right;
-                }
+            if (key.compareTo(current.key) < 0) {
+                current.left = new NodeAVL<K, T>(key, e);
+                current.left.parent = current;
+                current = current.left;
+            } else {
+                current.right = new NodeAVL<K, T>(key, e);
+                current.right.parent = current;
+                current = current.right;
+            }
             balance(current);
             return true;
         }
@@ -77,8 +110,7 @@ public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
     public boolean removeKey(K key) {
         if (findKey(key)) {
             removeNode(current);
-            if (current == null)
-                current = root;
+            current = root;
             return true;
         }
         return false;
@@ -93,8 +125,8 @@ public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
                     parent.left = null;
                 else
                     parent.right = null;
-               
                 balance(parent);
+                return;
             } else {
                 root = null;
             }
@@ -105,8 +137,10 @@ public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
         NodeAVL<K, T> child;
         if (node.right != null)
             child = minInTree(node.right);
-        else
+        else {
+
             child = maxInTree(node.left);
+        }
 
         node.key = child.key;
         node.data = child.data;
@@ -143,6 +177,7 @@ public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
     private void preOrder(NodeAVL<K, T> n) {
         if (n != null) {
             System.out.println(n.data);
+            System.out.println("-------------------------");
             preOrder(n.left);
             preOrder(n.right);
         }
@@ -152,6 +187,8 @@ public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
         if (n != null) {
             inOrder(n.left);
             System.out.println(n.data);
+            System.out.println("-------------------------");
+
             inOrder(n.right);
         }
     }
@@ -161,11 +198,13 @@ public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
             postOrder(n.left);
             postOrder(n.right);
             System.out.println(n.data);
+            System.out.println("-------------------------");
+
         }
     }
 
     private void balance(NodeAVL<K, T> node) { // recursive
-        calcBalance(node.right, node.left, node);
+        calcBalance(node);
 
         if (node.balanceFactor == 2) {
             if (node.right.balanceFactor >= 0) {
@@ -271,16 +310,17 @@ public class AVLTree<K extends Comparable<K>, T> implements BSTree<K, T> {
 
     @Override
     public void deleteSub() {
-        if (current == root){
+        if (current == root) {
             current = root = null;
             return;
-        }NodeAVL<K, T> parent = current.parent;
-        if(parent.left == current)
+        }
+        NodeAVL<K, T> parent = current.parent;
+        if (parent.left == current)
             parent.left = null;
         else
             parent.right = null;
         balance(parent);
-        current = root; 
+        current = root;
     }
 
 }
