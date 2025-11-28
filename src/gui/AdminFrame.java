@@ -438,7 +438,7 @@ public class AdminFrame extends JFrame {
                             int rating = Integer.parseInt(JOptionPane.showInputDialog(AdminFrame.this,
                                     "Enter Rating (1-5):", "Add Review", JOptionPane.QUESTION_MESSAGE));
                             if (comment != null) {
-                                Review r = new Review(comment, rating, cID);
+                                Review r = new Review(comment, rating, c);
                                 eCSystem.addReviewToProduct(p, r);
                                 System.out
                                         .println("--- Review " + r.getReviewId() + " added to " + p.getName() + " ---");

@@ -218,7 +218,7 @@ public class AVLTree<K extends Comparable<K>, T> implements BinaryTree<K, T> {
 
         else if (node.balanceFactor == -2) {
 
-            if (node.left.balanceFactor < 0) {
+            if (node.left.balanceFactor <= 0) {
                 // rotate left
                 leftRotation(node);
             } else {

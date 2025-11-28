@@ -6,29 +6,28 @@ public class Review {
     private static int countId = 501;
     private int rating;
     private String comment;
-    private int customerId;
+    private Customer reviewCustomer;
 
-    public Review(String comment, int rating, int customerId) {
+    public Review(String comment, int rating, Customer c) {
         this.comment = comment;
         this.rating = rating;
-        this.customerId = customerId;
+        reviewCustomer = c;
         reviewId = countId++;
     }
 
-    public Review(int reviewId, int customerId, int rating, String comment) {
+    public Review(int reviewId, Customer c, int rating, String comment) {
         this.comment = comment;
         this.rating = rating;
-        this.customerId = customerId;
+        reviewCustomer = c;
         this.reviewId = reviewId;
     }
 
-    public void editReview(String comment, int score) { 
+    public void editReview(String comment, int score) {
         this.comment = comment;
         this.rating = score;
     }
 
-    
-    //  setter/getters
+    // setter/getters
 
     public int getRating() {
         return rating;
@@ -46,12 +45,12 @@ public class Review {
         this.comment = comment;
     }
 
-    public int getCustomerId() {
-        return customerId;
+    public Customer getReviewCustomer() {
+        return reviewCustomer;
     }
 
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
+    public void setReviewCustomer(Customer reviewCustomer) {
+        this.reviewCustomer = reviewCustomer;
     }
 
     public int getReviewId() {
@@ -61,7 +60,6 @@ public class Review {
     public void setReviewId(int reviewId) {
         this.reviewId = reviewId;
     }
- 
 
     @Override
     public String toString() {

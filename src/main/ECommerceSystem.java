@@ -81,7 +81,7 @@ public class ECommerceSystem {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 String[] row = line.split(",");
-                Review r = new Review(Integer.parseInt(row[0]), Integer.parseInt(row[2]), Integer.parseInt(row[3]),
+                Review r = new Review(Integer.parseInt(row[0]), co.searchCustomerId(Integer.parseInt(row[2])), Integer.parseInt(row[3]),
                         (row.length > 5 ? row[4] + "," + row[5] : row[4]));
 
                 po.addReview(Integer.parseInt(row[1]), r);
@@ -150,7 +150,7 @@ public class ECommerceSystem {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(REVIEWS_FILE, true));
                 writer.newLine();
                 writer.write(
-                        r.getReviewId() + "," + p.getProductId() + "," + r.getCustomerId() + "," + r.getRating() + ","
+                        r.getReviewId() + "," + p.getProductId() + "," + r.getReviewCustomer().getCustomerId() + "," + r.getRating() + ","
                                 + "\"" + r.getComment() + "\"");
                 writer.close();
             }
@@ -167,8 +167,8 @@ public class ECommerceSystem {
             if (!reviewsOfProduct.empty()) {
                 reviewsOfProduct.findFirst();
                 while (true) {
-                    int customerId = reviewsOfProduct.retrieve().getCustomerId();
-                    customers.insert(customerId, searchCustomerId(customerId));
+                    Customer reviewer = reviewsOfProduct.retrieve().getReviewCustomer();
+                    customers.insert(reviewer.getCustomerId(), reviewer);
                     if (reviewsOfProduct.last())
                         break;
                     reviewsOfProduct.findNext();
