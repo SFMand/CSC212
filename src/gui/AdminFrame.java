@@ -51,7 +51,7 @@ public class AdminFrame extends JFrame {
         // JButton commonProducts = new JButton("List Common Products");
         JButton customerOrderHistory = new JButton("List Customer's Order History");
         JButton addReview = new JButton("Add Review to Product");
-        JButton updateReview = new JButton("Update Review");
+        //JButton updateReview = new JButton("Update Review");
         JButton avgReview = new JButton("Get Average Rating of Product");
         JButton cancelOrder = new JButton("Cancel Order");
         JButton updateOrder = new JButton("Update Order Status");
@@ -79,7 +79,7 @@ public class AdminFrame extends JFrame {
         buttonPanel.add(cancelOrder);
         buttonPanel.add(new JLabel("Review Operations"));
         buttonPanel.add(addReview);
-        buttonPanel.add(updateReview);
+        //buttonPanel.add(updateReview);
         buttonPanel.add(avgReview);
         buttonPanel.add(new JLabel("Other Requirements"));
         // buttonPanel.add(commonProducts);
